@@ -1,63 +1,293 @@
-body { font-family: sans-serif; text-align: center; }
-/* style.css */
+/* 引入一个更现代、圆润的 Google 字体 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* --- 添加到 style.css 开头 --- */
+
+/* 视频背景容器 */
+.video-background-container {
+    position: fixed; /* 固定在视口，不随滚动条滚动 */
+    top: 0;
+    left: 0;
+    width: 100vw; /* 100% 视口宽度 */
+    height: 100vh; /* 100% 视口高度 */
+    z-index: -2; /* 把它放在最底层 */
+    overflow: hidden; /* 防止视频溢出 */
+}
+
+#bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 关键！保持宽高比的同时填满整个容器，可能会裁剪部分视频内容 */
+}
+
+/* 半透明遮罩层 */
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(26, 26, 46, 0.7); /* 藏青色半透明，0.7是透明度，可以调整 */
+    z-index: -1; /* 确保它在视频之上，但在你的内容之下 */
+}
+
+/* 移除 body 的背景色，否则会遮住视频 */
+body {
+    /* ... 你body原有的其他样式，如 font-family, color 等保持不变 ... */
+    background-color: transparent; /* 或者直接删除 background-color 这一行 */
+}
+
+/* 确保你的主要内容容器有透明背景 */
+header, main, footer {
+    background-color: transparent;
+}
+
+
+/* --- CSS 变量定义 --- */
+:root {
+    /* 基础颜色 */
+    --color-bg: #1a1a2e; /* 深邃的藏青色背景 */
+    --color-surface: #2a2a3e; /* 卡片和元素的表面颜色 */
+    --color-text: #e0e0e0; /* 主要文字颜色 */
+    --color-text-muted: #9a9aae; /* 辅助性文字颜色 */
+    --color-accent: #4a8dff; /* 按钮和高光的强调色 */
+
+    /* 稀有度颜色 */
+    --rarity-common: #b0b0b0;
+    --rarity-rare: #5a9cff;
+    --rarity-epic: #c56eff;
+    --rarity-legendary: #ffc65a;
+    --rarity-legendary-glow: #ffe86e; /* 传说物品的光晕/渐变色 */
+
+    /* 其他样式变量 */
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 15px rgba(0, 0, 0, 0.4);
+    --transition-speed: 0.3s;
+}
+
+/* --- 全局样式 --- */
+body {
+    font-family: 'Poppins', sans-serif; /* 使用引入的字体 */
+    text-align: center;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    padding: 20px;
+    margin: 0;
+}
+
+h1, h4 {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 物品库存网格 --- */
 #inventory-display {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 自适应网格布局 */
-    gap: 15px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 物品格子稍大一些 */
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
 }
 
 .inventory-item {
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    padding: 5px;
-    background-color: #fff;
+    border: 2px solid; /* 边框颜色由稀有度类决定 */
+    border-radius: var(--border-radius-sm);
+    padding: 8px;
+    background-color: var(--color-surface);
     text-align: center;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-speed) ease;
+    cursor: pointer;
+}
+
+.inventory-item:hover {
+    transform: translateY(-5px) scale(1.05); /* 悬停时上浮并放大 */
+    box-shadow: var(--shadow-md);
 }
 
 .inventory-item img {
     width: 100%;
     height: auto;
+    border-radius: 4px; /* 图片也加个小圆角 */
 }
 
 .item-name {
-    font-size: 12px;
+    font-size: 13px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-top: 5px;
+    color: var(--color-text-muted);
 }
 
-/* 同样，用边框颜色来彰显稀有度 */
-.inventory-item.rarity-普通 { border-color: #a0a0a0; }
-.inventory-item.rarity-稀有 { border-color: #007bff; }
-.inventory-item.rarity-史诗 { border-color: #8a2be2; }
-.inventory-item.rarity-传说 { border-color: #ff8c00; }
+/* --- 按钮样式 --- */
+button {
+    padding: 12px 28px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    background-image: linear-gradient(45deg, var(--color-accent), #6a5af9);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 4px 10px rgba(74, 141, 255, 0.3);
+    transition: all var(--transition-speed) ease;
+}
 
-button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(74, 141, 255, 0.4);
+}
 
+button:active {
+    transform: scale(0.98);
+}
+
+/* --- 抽奖结果卡片 --- */
 .reward-card {
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    padding: 16px;
-    margin-top: 10px;
+    border: 3px solid; /* 边框更粗，更醒目 */
+    border-radius: var(--border-radius-md);
+    padding: 24px;
+    margin-top: 20px;
     display: inline-block;
-    background-color: #f9f9f9;
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-md);
+    min-width: 280px;
+    transition: all var(--transition-speed) ease;
 }
 
-/* 根据稀有度改变边框颜色 */
-.reward-card.rarity-普通 { border-color: #a0a0a0; }
-.reward-card.rarity-稀有 { border-color: #007bff; }
-.reward-card.rarity-史诗 { border-color: #8a2be2; }
-.reward-card.rarity-传说 { border-color: #ff8c00; } /* 为未来做准备 */
+.reward-card h4 {
+    margin: 10px 0 5px;
+    font-size: 24px;
+}
 
-.reward-card h4 { margin: 10px 0 5px; }
-.reward-card p { margin: 5px 0; color: #555; }
+.reward-card p {
+    margin: 5px 0;
+    color: var(--color-text-muted);
+    font-size: 16px;
+}
 
-/* 让稀有度文字本身也带上颜色 */
-.rarity-text { font-weight: bold; }
-.rarity-普通 .rarity-text { color: #a0a0a0; }
-.rarity-稀有 .rarity-text { color: #007bff; }
-.rarity-史诗 .rarity-text { color: #8a2be2; }
-.rarity-传说 .rarity-text { color: #ff8c00; }
+/* --- 稀有度颜色应用 --- */
+/* 普通 */
+.rarity-普通 { border-color: var(--rarity-common); }
+.rarity-普通 .rarity-text { color: var(--rarity-common); }
+
+/* 稀有 */
+.rarity-稀有 { border-color: var(--rarity-rare); }
+.rarity-稀有 .rarity-text { color: var(--rarity-rare); }
+
+/* 史诗 */
+.rarity-史诗 { border-color: var(--rarity-epic); }
+.rarity-史诗 .rarity-text { color: var(--rarity-epic); }
+
+/* 传说 - 特殊效果！ */
+.rarity-传说 {
+    border-color: var(--rarity-legendary);
+    /* 添加光晕效果 */
+    box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
+}
+.rarity-传说 .rarity-text {
+    color: var(--rarity-legendary);
+    /* 文字也发光 */
+    text-shadow: 0 0 5px var(--rarity-legendary-glow);
+}
+
+/* 为“传说”奖励卡片添加呼吸光晕动画 */
+@keyframes legendary-glow {
+    0% {
+        box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
+        border-color: var(--rarity-legendary);
+    }
+    50% {
+        box-shadow: 0 0 25px var(--rarity-legendary-glow), 0 0 40px var(--rarity-legendary-glow);
+        border-color: var(--rarity-legendary-glow);
+    }
+    100% {
+        box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
+        border-color: var(--rarity-legendary);
+    }
+}
+
+.reward-card.rarity-传说 {
+    animation: legendary-glow 2.5s infinite ease-in-out;
+}
+
+/* --- 添加到 style.css 末尾 --- */
+
+/* 页面副标题样式 */
+.subtitle {
+    font-size: 1.1em;
+    color: var(--color-text-muted);
+    margin-top: -15px;
+    font-weight: 400;
+}
+
+/* 输入框和标签的容器，方便布局 */
+.form-group {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+label {
+    font-size: 1em;
+    color: var(--color-text-muted);
+}
+
+input[type="email"] {
+    padding: 10px 15px;
+    border: 2px solid var(--color-surface);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--border-radius-sm);
+    width: 80%;
+    max-width: 300px;
+    text-align: center;
+    font-size: 1em;
+    transition: all var(--transition-speed) ease;
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px rgba(74, 141, 255, 0.5);
+}
+
+/* 视觉上隐藏元素，但对屏幕阅读器保持可见 (用于辅助功能) */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* 次要按钮样式 (例如退出按钮) */
+.button-secondary {
+    background: transparent;
+    border: 2px solid var(--color-text-muted);
+    color: var(--color-text-muted);
+    margin-top: 20px;
+}
+
+.button-secondary:hover {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-text);
+}
+
+footer {
+    margin-top: 50px;
+    padding: 20px;
+    color: var(--color-text-muted);
+    font-size: 0.9em;
+}

@@ -2,26 +2,53 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>不打卡就饿死</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一个通过每日打卡来收集美食奖励的游戏。">
+    <title>不打卡就饿死 - 我的吃饭冒险</title>
+
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="theme-color" content="#1a1a2e">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>我的吃饭冒险</h1>
 
-    <div id="auth-section">
-        <h2>输入邮箱开始冒险</h2>
-        <input type="email" id="email-input" placeholder="your@email.com" />
-        <button id="login-button">发送登录链接</button>
+    <div class="video-background-container">
+        <video autoplay loop muted playsinline poster="poster.jpg" id="bg-video">
+            <source src="login-bg.mp4" type="video/mp4">
+            你的浏览器不支持视频标签。
+        </video>
     </div>
 
-    <div id="game-section" style="display: none;">
-        <button id="check-in-button">今天我完成了！(打卡)</button>
-        <div id="reward-display"></div>
-        <button id="logout-button">退出</button>
-    </div>
+    <div class="video-overlay"></div>
+    <header>
+        <h1>我的吃饭冒险</h1>
+        <p class="subtitle">今天，你完成任务了吗？</p>
+    </header>
 
-    <h2>我吃过的美食</h2>
-    <div id="inventory-display"></div>
+    <main>
+        <section id="auth-section" aria-labelledby="auth-heading">
+            <h2 id="auth-heading">输入邮箱开始冒险</h2>
+            <div class="form-group">
+                <label for="email-input">电子邮箱地址</label>
+                <input type="email" id="email-input" placeholder="your@email.com" required>
+            </div>
+            <button id="login-button">发送登录链接</button>
+        </section>
+
+        <section id="game-section" style="display: none;" aria-labelledby="game-heading">
+            <h2 id="game-heading" class="visually-hidden">游戏操作</h2> <button id="check-in-button">今天我完成了！(打卡)</button>
+            <div id="reward-display" aria-live="polite"></div>
+            <button id="logout-button" class="button-secondary">退出登录</button>
+        </section>
+
+        <section id="inventory-section" aria-labelledby="inventory-heading">
+            <h2 id="inventory-heading">我吃过的美食</h2>
+            <div id="inventory-display">
+                </div>
+        </section>
+    </main>
+
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>

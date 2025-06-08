@@ -1,9 +1,3 @@
-// 确保这些元素获取代码在最前面
-const authSection = document.getElementById('auth-section');
-const gameSection = document.getElementById('game-section');
-const loginButton = document.getElementById('login-button');
-const emailInput = document.getElementById('email-input');
-
 // --- 4.1 连接到Supabase ---
 // 从官方CDN库中解构出 createClient 方法
 const { createClient } = supabase;
@@ -15,6 +9,14 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log('Supabase客户端已初始化:', supabaseClient);
+
+// 确保这些元素获取代码在最前面
+const authSection = document.getElementById('auth-section');
+const gameSection = document.getElementById('game-section');
+const loginButton = document.getElementById('login-button');
+const emailInput = document.getElementById('email-input');
+
+
 
 // --- 函数定义区 ---
 
