@@ -1,11 +1,13 @@
-// script.js
+// 确保这些元素获取代码在最前面
+const authSection = document.getElementById('auth-section');
+const gameSection = document.getElementById('game-section');
+const loginButton = document.getElementById('login-button');
+const emailInput = document.getElementById('email-input');
 
 // --- 4.1 连接到Supabase ---
 // 从官方CDN库中解构出 createClient 方法
 const { createClient } = supabase;
 
-// 这两个关键信息需要你从自己的Supabase项目里复制过来
-// 路径：进入你的项目 -> 左下角“Project Settings” -> “API”
 const SUPABASE_URL = 'https://lqbtyhkvljyqpbtqanom.supabase.co'; // 把这里换成你的URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxxYnR5aGt2bGp5cXBidHFhbm9tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzNzYyNjIsImV4cCI6MjA2NDk1MjI2Mn0.YiloY00GzPTB2A-D1ysfhIGBUhsZBtm4mwvB9SvNUzg'; // 把这里换成你的Anon (public) Key
 
@@ -14,127 +16,87 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log('Supabase客户端已初始化:', supabaseClient);
 
+// --- 函数定义区 ---
+
 /**
- * 检查当前是否存在有效的用户会话。
- * 这是实现“记住我”功能的关键。
+ * 处理登录按钮点击
  */
-async function checkSession() {
-    // getSession() 会从 localStorage 中获取会话信息
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
-
-    if (error) {
-        console.error("获取会话失败:", error);
-        return;
-    }
-
-    if (session) {
-        // 如果找到了会话，说明用户是“已登录”状态
-        console.log("找到有效会话，用户已登录:", session.user);
-
-        // UI操作：隐藏登录区，显示游戏区
-        authSection.style.display = 'none';
-        gameSection.style.display = 'block';
-
-        // 加载该用户的游戏数据
-        loadGameData(session.user);
-    } else {
-        // 如果没找到会话，说明用户是“未登录”状态
-        console.log("未找到有效会话，请登录。");
-
-        // UI操作：显示登录区，隐藏游戏区
-        authSection.style.display = 'block';
-        gameSection.style.display = 'none';
-    }
-}
-
-// --- 4.2 用户认证 ---
-
-// 获取HTML元素
-const authSection = document.getElementById('auth-section');
-const gameSection = document.getElementById('game-section');
-const loginButton = document.getElementById('login-button');
-const emailInput = document.getElementById('email-input');
-
-// 监听登录按钮点击
-loginButton.addEventListener('click', async () => {
+async function handleLogin() {
     const email = emailInput.value;
     if (!email) {
         alert('请输入邮箱地址！');
         return;
     }
-
     try {
-        // 这是Supabase的魔法！调用这个函数就会自动发送登录邮件
-        // 修改后的代码
-        const { error } = await supabaseClient.auth.signInWithOtp({
-          email: email, // 用户的邮箱
-          options: {
-            // 明确告诉Supabase，在用户点击邮件链接后，应该跳转到这个URL
-            emailRedirectTo: 'https://task-eat.vercel.app',
-          }
-        });
+        const { error } = await supabaseClient.auth.signInWithOtp({ email });
         if (error) throw error;
-        alert('登录链接已发送至您的邮箱，发件人为supabase，请查收~');
+        alert('登录链接已发送至您的邮箱，请检查！');
     } catch (error) {
-        console.error('登录失败:', error);
+        console.error('登录邮件发送失败:', error);
         alert(`登录失败: ${error.message}`);
     }
-});
+}
 
+/**
+ * 更新UI并加载游戏数据
+ * @param {object} user - Supabase用户对象
+ */
+function onLoginSuccess(user) {
+    console.log("登录成功，更新UI并加载数据 for user:", user.id);
+    authSection.style.display = 'none';
+    gameSection.style.display = 'block';
+    loadGameData(user); // 这是你已有的加载游戏数据的函数
+}
 
-// 监听用户的认证状态变化 (登录、退出)
-// 这是整个认证流程中最核心的部分！
-supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session) {
-        // 用户成功登录！
-        console.log('用户已登录:', session.user);
-        authSection.style.display = 'none'; // 隐藏登录区域
-        gameSection.style.display = 'block';  // 显示游戏区域
+/**
+ * 处理未登录状态
+ */
+function onLogout() {
+    console.log("用户未登录或已退出，显示登录界面。");
+    authSection.style.display = 'block';
+    gameSection.style.display = 'none';
+}
 
-        // 登录成功后，立即加载游戏数据
-        loadGameData(session.user);
+/**
+ * 检查当前会话状态
+ */
+async function checkSession() {
+    console.log("1. 开始检查会话...");
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    console.log("2. getSession() 调用完毕，获取到的 session:", session);
 
+    if (session) {
+        onLoginSuccess(session.user);
+    } else {
+        onLogout();
+    }
+}
+
+// --- 事件监听与执行区 ---
+
+// 绑定登录按钮事件
+loginButton.addEventListener('click', handleLogin);
+
+// 监听认证状态变化 (处理实时登录/退出)
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log(`认证状态发生变化: ${event}`);
+    // 这个监听器现在很简单，它只在状态明确改变时触发UI更新
+    // 主要的启动逻辑由下面的 checkSession() 完成
+    if (event === 'SIGNED_IN') {
+        onLoginSuccess(session.user);
     } else if (event === 'SIGNED_OUT') {
-        // 用户退出登录
-        authSection.style.display = 'block'; // 显示登录区域
-        gameSection.style.display = 'none';  // 隐藏游戏区域
+        onLogout();
     }
 });
+
+// === 脚本执行入口 ===
+// 页面加载后，立即执行会话检查
+checkSession();
 
 const logoutButton = document.getElementById('logout-button');
 logoutButton.addEventListener('click', () => supabaseClient.auth.signOut());
 
-/**
- * 检查当前是否存在有效的用户会话 (上面第二步添加的函数)
- */
-async function checkSession() {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session) {
-        console.log("找到有效会话，用户已登录:", session.user);
-        authSection.style.display = 'none';
-        gameSection.style.display = 'block';
-        loadGameData(session.user);
-    } else {
-        console.log("未找到有效会话，请登录。");
-        authSection.style.display = 'block';
-        gameSection.style.display = 'none';
-    }
-}
 
-// 监听用户的认证状态变化 (这个函数也几乎不变)
-// 它现在主要负责处理“刚刚发生”的登录/退出事件
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    console.log(`认证事件: ${event}`, session);
-    // 当用户通过魔法链接刚登录，或者刚退出时，重新检查会话状态来更新UI
-    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-        checkSession();
-    }
-});
-
-
-// === 脚本执行入口 ===
-// 在所有函数都定义好之后，在脚本的最后，立即调用 checkSession
-checkSession();
 
 // --- 4.3 核心游戏循环 ---
 
