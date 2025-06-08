@@ -1,4 +1,63 @@
 body { font-family: sans-serif; text-align: center; }
-#inventory-display { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-#inventory-display img { width: 64px; height: 64px; }
+/* style.css */
+#inventory-display {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 自适应网格布局 */
+    gap: 15px;
+    padding: 10px;
+}
+
+.inventory-item {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 5px;
+    background-color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.inventory-item img {
+    width: 100%;
+    height: auto;
+}
+
+.item-name {
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 同样，用边框颜色来彰显稀有度 */
+.inventory-item.rarity-普通 { border-color: #a0a0a0; }
+.inventory-item.rarity-稀有 { border-color: #007bff; }
+.inventory-item.rarity-史诗 { border-color: #8a2be2; }
+.inventory-item.rarity-传说 { border-color: #ff8c00; }
+
 button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+
+.reward-card {
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #f9f9f9;
+}
+
+/* 根据稀有度改变边框颜色 */
+.reward-card.rarity-普通 { border-color: #a0a0a0; }
+.reward-card.rarity-稀有 { border-color: #007bff; }
+.reward-card.rarity-史诗 { border-color: #8a2be2; }
+.reward-card.rarity-传说 { border-color: #ff8c00; } /* 为未来做准备 */
+
+.reward-card h4 { margin: 10px 0 5px; }
+.reward-card p { margin: 5px 0; color: #555; }
+
+/* 让稀有度文字本身也带上颜色 */
+.rarity-text { font-weight: bold; }
+.rarity-普通 .rarity-text { color: #a0a0a0; }
+.rarity-稀有 .rarity-text { color: #007bff; }
+.rarity-史诗 .rarity-text { color: #8a2be2; }
+.rarity-传说 .rarity-text { color: #ff8c00; }

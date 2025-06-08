@@ -32,9 +32,16 @@ loginButton.addEventListener('click', async () => {
 
     try {
         // 这是Supabase的魔法！调用这个函数就会自动发送登录邮件
-        const { error } = await supabaseClient.auth.signInWithOtp({ email });
+        // 修改后的代码
+        const { error } = await supabaseClient.auth.signInWithOtp({
+          email: email, // 用户的邮箱
+          options: {
+            // 明确告诉Supabase，在用户点击邮件链接后，应该跳转到这个URL
+            emailRedirectTo: 'https://task-eat.vercel.app',
+          }
+        });
         if (error) throw error;
-        alert('登录链接已发送至您的邮箱，请检查！');
+        alert('登录链接已发送至您的邮箱，发件人为supabase，请查收~');
     } catch (error) {
         console.error('登录失败:', error);
         alert(`登录失败: ${error.message}`);
@@ -113,7 +120,9 @@ async function fetchInventory() {
         .select(`
             rewards (
                 name,
-                image_url
+                image_url,
+                type,
+                rarity
             )
         `)
         .eq('user_id', currentUser.id);
@@ -129,12 +138,21 @@ async function fetchInventory() {
         inventoryDisplay.innerHTML = '<p>你的收藏还是空的，快来打卡吧！</p>';
     } else {
         data.forEach(item => {
-            // item 的结构是 { rewards: { name: '...', image_url: '...' } }
-            const img = document.createElement('img');
-            img.src = item.rewards.image_url;
-            img.alt = item.rewards.name;
-            img.title = item.rewards.name; // 鼠标悬浮时显示名字
-            inventoryDisplay.appendChild(img);
+            // item 的结构现在是 { rewards: { name: '...', image_url: '...', rarity: '...', type: '...' } }
+                const reward = item.rewards;
+                if (!reward) return; // 安全检查
+
+                const rarityClass = `rarity-${reward.rarity.toLowerCase()}`;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `inventory-item ${rarityClass}`; // 给每个物品容器加上稀有度类
+                itemDiv.title = `${reward.name}\n稀有度: ${reward.rarity}\n类别: ${reward.type}`; // 鼠标悬浮提示
+                itemDiv.innerHTML = `
+                    <img src="${reward.image_url}" alt="${reward.name}" />
+                    <div class="item-name">${reward.name}</div>
+                `;
+
+                inventoryDisplay.appendChild(itemDiv);
         });
     }
 }
@@ -147,17 +165,36 @@ checkInButton.addEventListener('click', async () => {
     checkInButton.textContent = '开箱中...';
 
     try {
-        // 步骤1: 从所有奖励中随机挑选一个
+        // script.js
+        // 步骤1: 获取所有奖励的完整信息，包括稀有度！
         const { data: allRewards, error: rewardsError } = await supabaseClient
             .from('rewards')
-            .select('id, name, image_url');
+            .select('id, name, image_url, rarity, type'); // <<<<<<< 修改这里，获取新字段
 
         if (rewardsError) throw rewardsError;
         if (allRewards.length === 0) throw new Error("奖励池是空的！");
 
-        const randomReward = allRewards[Math.floor(Math.random() * allRewards.length)];
+        // 步骤1.5: 实现加权随机算法
+        const weights = {
+            '普通': 70, // 70% 的权重
+            '稀有': 25, // 25% 的权重
+            '史诗': 5,  // 5% 的权重
+            '传说': 0.1 // 0.1% 的权重（可以先不放这个稀有度的物品）
+        };
 
-        console.log('恭喜！抽中了:', randomReward.name);
+        const weightedPool = [];
+        allRewards.forEach(reward => {
+            // 根据权重，决定一个物品在“抽奖池”里应该放多少份
+            const weight = weights[reward.rarity] || 1; // 如果没有定义权重，默认为1
+            for (let i = 0; i < weight; i++) {
+                weightedPool.push(reward);
+            }
+        });
+
+        // 从加权后的大池子里随机抽一个
+        const randomReward = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+
+        console.log('恭喜！抽中了:', randomReward.name, `(稀有度: ${randomReward.rarity})`);
 
         // 步骤2: 将奖励记录到用户仓库 (user_inventory)
         const { error: inventoryError } = await supabaseClient
@@ -175,10 +212,19 @@ checkInButton.addEventListener('click', async () => {
         if (logError) throw logError;
 
         // 步骤4: 更新UI界面
+        // ... 在 try-catch 块中
+
+        // 为了根据稀有度显示不同颜色，我们先定义一个简单的CSS类名
+        const rarityClass = `rarity-${randomReward.rarity.toLowerCase()}`; // e.g., rarity-普通, rarity-史诗
+
         rewardDisplay.innerHTML = `
             <h3>恭喜你获得!</h3>
-            <img src="${randomReward.image_url}" alt="${randomReward.name}" />
-            <p>${randomReward.name}</p>
+            <div class="reward-card ${rarityClass}">
+                <img src="${randomReward.image_url}" alt="${randomReward.name}" />
+                <h4>${randomReward.name}</h4>
+                <p>类别: ${randomReward.type}</p>
+                <p>稀有度: <span class="rarity-text">${randomReward.rarity}</span></p>
+            </div>
         `;
         checkInButton.textContent = '今天已打卡';
 
