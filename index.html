@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>不打卡就饿死</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>我的打卡冒险</h1>
+
+    <div id="auth-section">
+        <h2>输入邮箱开始冒险</h2>
+        <input type="email" id="email-input" placeholder="your@email.com" />
+        <button id="login-button">发送登录链接</button>
+    </div>
+
+    <div id="game-section" style="display: none;">
+        <button id="check-in-button">今天我完成了！(打卡)</button>
+        <div id="reward-display"></div>
+        <button id="logout-button">退出</button>
+    </div>
+
+    <h2>我的收藏</h2>
+    <div id="inventory-display"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
