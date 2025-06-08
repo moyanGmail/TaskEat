@@ -14,6 +14,39 @@ const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 console.log('Supabase客户端已初始化:', supabaseClient);
 
+/**
+ * 检查当前是否存在有效的用户会话。
+ * 这是实现“记住我”功能的关键。
+ */
+async function checkSession() {
+    // getSession() 会从 localStorage 中获取会话信息
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
+
+    if (error) {
+        console.error("获取会话失败:", error);
+        return;
+    }
+
+    if (session) {
+        // 如果找到了会话，说明用户是“已登录”状态
+        console.log("找到有效会话，用户已登录:", session.user);
+
+        // UI操作：隐藏登录区，显示游戏区
+        authSection.style.display = 'none';
+        gameSection.style.display = 'block';
+
+        // 加载该用户的游戏数据
+        loadGameData(session.user);
+    } else {
+        // 如果没找到会话，说明用户是“未登录”状态
+        console.log("未找到有效会话，请登录。");
+
+        // UI操作：显示登录区，隐藏游戏区
+        authSection.style.display = 'block';
+        gameSection.style.display = 'none';
+    }
+}
+
 // --- 4.2 用户认证 ---
 
 // 获取HTML元素
@@ -70,6 +103,38 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
 
 const logoutButton = document.getElementById('logout-button');
 logoutButton.addEventListener('click', () => supabaseClient.auth.signOut());
+
+/**
+ * 检查当前是否存在有效的用户会话 (上面第二步添加的函数)
+ */
+async function checkSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+        console.log("找到有效会话，用户已登录:", session.user);
+        authSection.style.display = 'none';
+        gameSection.style.display = 'block';
+        loadGameData(session.user);
+    } else {
+        console.log("未找到有效会话，请登录。");
+        authSection.style.display = 'block';
+        gameSection.style.display = 'none';
+    }
+}
+
+// 监听用户的认证状态变化 (这个函数也几乎不变)
+// 它现在主要负责处理“刚刚发生”的登录/退出事件
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log(`认证事件: ${event}`, session);
+    // 当用户通过魔法链接刚登录，或者刚退出时，重新检查会话状态来更新UI
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        checkSession();
+    }
+});
+
+
+// === 脚本执行入口 ===
+// 在所有函数都定义好之后，在脚本的最后，立即调用 checkSession
+checkSession();
 
 // --- 4.3 核心游戏循环 ---
 
