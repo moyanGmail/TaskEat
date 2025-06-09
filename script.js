@@ -114,9 +114,9 @@ async function fetchAndRenderLeaderboard() {
 
     // 查询预先计算好的leaderboard表，这个查询非常快！
     const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('*')
-        .order('rank', { ascending: true });
+    .from('leaderboard')
+    .select('username, score') // 只选择我们需要的字段
+    .order('score', { ascending: false }); // 直接根据分数从高到低排序
 
     if (error) {
         console.error("获取排行榜失败:", error);
@@ -130,10 +130,10 @@ async function fetchAndRenderLeaderboard() {
         data.forEach(player => {
             const li = document.createElement('li');
             li.innerHTML = `
-                <span class="rank">${player.rank}.</span>
+                <span class="rank"></span>  // <--- 让 rank 元素保持为空，CSS会自动填充序号
                 <span class="username">${player.username}</span>
                 <span class="score">${player.score}</span>
-            `;
+                `;
             leaderboardList.appendChild(li);
         });
     }
@@ -148,7 +148,8 @@ async function fetchAndRenderTodos() {
     const { data: todos, error } = await supabaseClient.from('todos').select('*').eq('user_id', currentUser.id).eq('is_complete', false).order('created_at', { ascending: false });
     if (error) { console.error('获取任务列表失败:', error); return todolistContainer.innerHTML = '<li>加载任务失败</li>'; }
     todolistContainer.innerHTML = '';
-    if (todos.length === 0) { todolistContainer.innerHTML = '<li>太棒了，所有任务都完成了！</li>'; } else { todos.forEach(todo => { const li = document.createElement('li'); li.className = todo.is_important ? 'important-task' : ''; li.innerHTML = `<input type="checkbox" class="complete-checkbox" data-task-id="${todo.id}" data-is-important="${todo.is_important}"><span>${todo.task_content}</span>`; todolistContainer.appendChild(li); }); }
+    if (todos.length === 0) { todolistContainer.innerHTML = '<li>太棒了，所有任务都完成了！</li>'; }
+    else { todos.forEach(todo => { const li = document.createElement('li'); li.className = todo.is_important ? 'important-task' : ''; li.innerHTML = `<input type="checkbox" class="complete-checkbox" data-task-id="${todo.id}" data-is-important="${todo.is_important}"><span>${todo.task_content}</span>`; todolistContainer.appendChild(li); }); }
 }
 
 async function handleAddTask() {
