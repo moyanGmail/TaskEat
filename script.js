@@ -232,7 +232,7 @@ async function grantRandomReward(reason) {
     if (!currentUser) return console.error("用户未登录，无法发放奖励");
 
     // --- 1. 定义保底机制的常量 ---
-    const PITY_THRESHOLD = 20; // 连续20次未出货，触发保底
+    const PITY_THRESHOLD = 10; // 连续10次未出货，触发保底
     const HIGH_RARITY_CATEGORIES = ['稀有', '史诗', '传说']; // 定义哪些算“好东西”
 
     try {
@@ -274,7 +274,7 @@ async function grantRandomReward(reason) {
             if (rewardsError) throw rewardsError;
             if (allRewards.length === 0) throw new Error("奖励池是空的！");
 
-            const weights = { '普通': 70, '稀有': 25, '史诗': 5, '传说': 1 };
+            const weights = { '普通': 60, '稀有': 35, '史诗': 5, '传说': 1 };
             const weightedPool = [];
             allRewards.forEach(reward => {
                 const weight = weights[reward.rarity] || 1;
