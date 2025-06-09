@@ -330,3 +330,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('keydown', playOnFirstInteraction, { once: true });
 
 });
+// --- 实现任务输入框回车提交 ---
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. 获取输入框和（已隐藏的）按钮
+    const taskInput = document.getElementById('task-input');
+    const addTaskButton = document.getElementById('add-task-button');
+
+    // 如果找不到输入框，就退出
+    if (!taskInput) return;
+
+    // 2. 为输入框添加一个键盘事件监听器
+    taskInput.addEventListener('keydown', function(event) {
+
+        // 3. 判断按下的键是否是“Enter”
+        if (event.key === 'Enter') {
+
+            // 4. 阻止默认行为（比如表单提交导致页面刷新）
+            event.preventDefault();
+
+            // 5. 检查输入框是否为空，如果不为空则执行点击
+            if (taskInput.value.trim() !== '') {
+
+                // 6. 神奇的一步：以编程方式“点击”我们隐藏的按钮
+                // 这样做的好处是，我们不需要重复写添加任务的逻辑
+                addTaskButton.click();
+            }
+        }
+    });
+});
