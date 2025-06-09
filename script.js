@@ -213,8 +213,12 @@ async function fetchInventory() {
 async function fetchAndRenderLeaderboard() {
     if (!leaderboardList) return;
     leaderboardList.innerHTML = '<li>加载中...</li>';
+
     const { data, error } = await supabaseClient.from('leaderboard').select('*').order('rank', { ascending: true });
+
     if (error) { console.error('获取排行榜失败:', error); return leaderboardList.innerHTML = '<li>加载失败</li>'; }
+    console.log('【排行榜数据抵达浏览器】:', data);
+
     leaderboardList.innerHTML = '';
     if (data.length === 0) { leaderboardList.innerHTML = '<li>排行榜暂无数据...</li>'; } else { data.forEach(player => {
         const li = document.createElement('li');
