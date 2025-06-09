@@ -41,52 +41,59 @@ header, main, footer { background-color: transparent; }
 h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text); }
 .subtitle { font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400; }
 
-/* --- 任务输入区 (已修复垂直对齐) --- */
+/* --- 任务输入区 (最终对齐修复版) --- */
 #add-todo-form {
     display: flex;
-    align-items: center; /* 这是垂直对齐的关键，现在会更精确 */
+    align-items: center; /* 垂直对齐的关键 */
     max-width: 600px;
     margin: 40px auto 10px auto;
     background-color: var(--color-bg);
-    border-radius: 99px;
+    border-radius: 99px; /* 药丸形状 */
     border: 2px solid var(--color-surface);
-    padding: 6px 8px;
+    padding: 5px; /* 在容器上留出一点边距 */
     transition: all var(--transition-speed) ease;
     flex-wrap: wrap;
     justify-content: center;
 }
+
 #add-todo-form:focus-within {
     border-color: var(--color-accent);
     box-shadow: 0 0 12px rgba(245, 206, 117, 0.4);
 }
+
 #task-input {
     flex-grow: 1;
+    height: 44px; /* 关键：设定一个固定的高度 */
     border: none;
     outline: none;
     background: transparent;
     color: var(--color-text);
-    padding: 12px 20px;
+    padding: 0 20px; /* 只保留水平内边距 */
     font-size: 1.1em;
     min-width: 200px;
 }
+
 #task-input::placeholder {
     color: var(--color-text-muted);
     opacity: 0.6;
 }
+
 #add-task-button {
     flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+    height: 44px; /* 关键：设定与输入框完全相同的高度 */
+    width: 44px;  /* 设定与高度相同的宽度，确保是正圆形 */
     border-radius: 50%;
-    font-size: 32px;
+    font-size: 28px;
     padding: 0;
-    margin-left: 8px;
+    margin-left: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
     line-height: 1;
     padding-bottom: 2px;
 }
+
+/* “重要任务”复选框的样式 */
 #add-todo-form label {
     display: block;
     width: 100%;
@@ -96,6 +103,7 @@ h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text)
     color: var(--color-text-muted);
     cursor: pointer;
 }
+
 #add-todo-form label input {
     margin-right: 8px;
     vertical-align: middle;
