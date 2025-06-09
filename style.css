@@ -321,3 +321,26 @@ footer {
     color: var(--color-text-muted);
     font-size: 0.9em;
 }
+
+/* style.css */
+
+.feedback-message {
+    text-align: center;
+    padding: 20px;
+    margin-top: 10px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    color: #495057;
+    font-size: 1.1em;
+}
+
+.feedback-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.progress-highlight {
+    font-weight: bold;
+    color: #007bff;
+    font-size: 1.2em;
+}

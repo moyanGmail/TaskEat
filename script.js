@@ -180,26 +180,34 @@ async function handleCompleteTask(taskId, isImportant) {
 // --- 4. 游戏奖励核心逻辑 ---
 
 /**
- * 检查是否满足奖励条件，并根据规则发放奖励
+ * (全新升级版) 检查并根据规则发放奖励，并提供清晰的UI反馈
  * @param {boolean} wasTaskImportant - 刚刚完成的任务是否是重要的
  */
 async function checkForReward(wasTaskImportant) {
     console.log(`任务完成，类型: ${wasTaskImportant ? '重要' : '非重要'}`);
+    if (!currentUser) return; // 安全检查
+
+    // 先清空上一次的临时反馈信息
+    rewardDisplay.innerHTML = '';
 
     if (wasTaskImportant) {
-        // 规则1: 完成1个重要任务，直接获得奖励
+        // --- 规则1: 完成1个重要任务，直接获得奖励 ---
         console.log("重要任务完成，准备发放奖励！");
         await grantRandomReward("完成重要任务");
     } else {
-        // 规则2: 完成3个非重要任务，获得奖励
-        // 1. 获取用户当前的普通任务进度
+        // --- 规则2: 完成3个非重要任务，获得奖励 ---
+        // 1. 获取用户当前的进度
         const { data: profile, error: profileError } = await supabaseClient
             .from('profiles')
             .select('non_important_task_progress')
             .eq('id', currentUser.id)
-            .single(); // .single()确保只返回一个对象，而不是数组
+            .single();
 
-        if (profileError) return console.error("获取用户进度失败:", profileError);
+        if (profileError) {
+            console.error("获取用户进度失败:", profileError);
+            rewardDisplay.innerHTML = `<p class="feedback-message error">获取用户进度失败</p>`;
+            return;
+        }
 
         const newProgress = profile.non_important_task_progress + 1;
         console.log(`非重要任务进度: ${newProgress}/3`);
@@ -208,15 +216,16 @@ async function checkForReward(wasTaskImportant) {
             // 进度达成，发放奖励并重置计数器
             console.log("非重要任务进度达成，发放奖励并重置！");
             await grantRandomReward("完成3个普通任务");
+            // 在 grantRandomReward 之后重置计数器
             await supabaseClient.from('profiles').update({ non_important_task_progress: 0 }).eq('id', currentUser.id);
         } else {
-            // 进度未达成，只更新计数器
+            // ⭐⭐⭐ 核心修改：进度未达成，也要给出明确的UI反馈！ ⭐⭐⭐
+            // 只更新计数器，并在界面上显示进度
             await supabaseClient.from('profiles').update({ non_important_task_progress: newProgress }).eq('id', currentUser.id);
+            rewardDisplay.innerHTML = `<p class="feedback-message">普通任务完成！当前进度：<span class="progress-highlight">${newProgress}/3</span>。加油！</p>`;
         }
     }
 }
-
-// script.js
 
 /**
  * (全新升级版) 发放一个随机奖励，内置“保底”机制
@@ -270,7 +279,7 @@ async function grantRandomReward(reason) {
             if (rewardsError) throw rewardsError;
             if (allRewards.length === 0) throw new Error("奖励池是空的！");
 
-            const weights = { '普通': 65, '稀有': 30, '史诗': 5, '传说': 1 };
+            const weights = { '普通': 65, '稀有': 25, '史诗': 5, '传说': 1 };
             const weightedPool = [];
             allRewards.forEach(reward => {
                 const weight = weights[reward.rarity] || 1;
