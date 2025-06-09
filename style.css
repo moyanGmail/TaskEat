@@ -291,3 +291,13 @@ footer {
     color: var(--color-text-muted);
     font-size: 0.9em;
 }
+
+/* style.css */
+.important-task span {
+    font-weight: bold;
+    color: #c0392b; /* 一点红色 */
+}
+.important-task span::before {
+    content: '★ '; /* 加个小星星 */
+    color: #f1c40f;
+}

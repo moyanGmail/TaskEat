@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="一个通过每日打卡来收集美食奖励的游戏。">
-    <title>不打卡就饿死 - 我的吃饭冒险</title>
+    <title>不打卡就饿死</title>
 
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <meta name="theme-color" content="#1a1a2e">
@@ -36,11 +36,24 @@
             <button id="login-button">发送登录链接</button>
         </section>
 
-        <section id="game-section" style="display: none;" aria-labelledby="game-heading">
-            <h2 id="game-heading" class="visually-hidden">游戏操作</h2> <button id="check-in-button">今天我完成了！(打卡)</button>
-            <div id="reward-display" aria-live="polite"></div>
-            <button id="logout-button" class="button-secondary">退出登录</button>
-        </section>
+        <div id="game-section" style="display: none;">
+            <h2>我的任务列表</h2>
+
+            <div id="add-todo-form">
+                <input type="text" id="task-input" placeholder="输入一个新任务...">
+                <label>
+                    <input type="checkbox" id="important-checkbox">
+                    重要任务
+                </label>
+                <button id="add-task-button">添加任务</button>
+            </div>
+
+            <ul id="todolist-container">
+                </ul>
+
+            <div id="reward-display"></div>
+        </div>
+
 
         <section id="inventory-section" aria-labelledby="inventory-heading">
             <h2 id="inventory-heading">我吃过的美食</h2>
