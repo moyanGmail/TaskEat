@@ -41,36 +41,34 @@ header, main, footer { background-color: transparent; }
 h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text); }
 .subtitle { font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400; }
 
-/* --- 任务输入区 (最终对齐修复版) --- */
+/* --- 任务输入区 (终极布局方案 - 悬浮按钮) --- */
 #add-todo-form {
-    display: flex;
-    align-items: center; /* 垂直对齐的关键 */
+    position: relative; /* 关键(1): 成为按钮定位的“锚点” */
+    display: block; /* 不再使用 flex-direction: row */
     max-width: 600px;
     margin: 40px auto 10px auto;
-    background-color: var(--color-bg);
-    border-radius: 99px; /* 药丸形状 */
-    border: 2px solid var(--color-surface);
-    padding: 5px; /* 在容器上留出一点边距 */
-    transition: all var(--transition-speed) ease;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-#add-todo-form:focus-within {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 12px rgba(245, 206, 117, 0.4);
 }
 
 #task-input {
-    flex-grow: 1;
-    height: 44px; /* 关键：设定一个固定的高度 */
-    border: none;
-    outline: none;
-    background: transparent;
+    display: block;
+    width: 100%;
+    height: 54px; /* 设定一个舒适的高度 */
+    border-radius: 99px; /* 药丸形状 */
+    background-color: var(--color-bg);
+    border: 2px solid var(--color-surface);
+
+    /* 调整内边距，为按钮留出足够空间 */
+    padding: 0 60px 0 25px; /* 右侧内边距(60px)必须大于按钮宽度 */
+
     color: var(--color-text);
-    padding: 0 20px; /* 只保留水平内边距 */
     font-size: 1.1em;
-    min-width: 200px;
+    transition: all var(--transition-speed) ease;
+}
+
+#task-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 12px rgba(245, 206, 117, 0.4);
 }
 
 #task-input::placeholder {
@@ -79,27 +77,32 @@ h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text)
 }
 
 #add-task-button {
-    flex-shrink: 0;
-    height: 44px; /* 关键：设定与输入框完全相同的高度 */
-    width: 44px;  /* 设定与高度相同的宽度，确保是正圆形 */
+    /* 关键(2): 使用绝对定位，脱离文档流 */
+    position: absolute;
+    top: 50%; /* 关键(3): 定位到父容器的垂直中线 */
+    right: 7px; /* 距离右侧的距离 */
+    transform: translateY(-50%); /* 关键(4): 将自身向上移动50%的高度，实现完美垂直居中 */
+
+    /* 设定一个更精致的尺寸 */
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 28px;
+
+    /* 其他样式 */
+    font-size: 24px;
     padding: 0;
-    margin-left: 5px;
     display: flex;
     justify-content: center;
     align-items: center;
     line-height: 1;
-    padding-bottom: 2px;
+    padding-bottom: 1px; /* 视觉微调 */
 }
 
 /* “重要任务”复选框的样式 */
 #add-todo-form label {
     display: block;
-    width: 100%;
     text-align: center;
-    margin-top: 15px;
-    padding-bottom: 5px;
+    margin-top: 15px; /* 与输入框的距离 */
     color: var(--color-text-muted);
     cursor: pointer;
 }
@@ -110,7 +113,6 @@ h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text)
     transform: scale(1.2);
     accent-color: var(--color-accent);
 }
-
 /* --- 按钮样式 (全局) --- */
 /* ... (这部分以及之后的所有代码都保持不变) ... */
 button { padding: 12px 28px; font-size: 18px; font-weight: 600; cursor: pointer; background-image: linear-gradient(45deg, var(--color-accent), #e89f43); color: var(--color-bg); border: none; border-radius: var(--border-radius-md); box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3); transition: all var(--transition-speed) ease; }
