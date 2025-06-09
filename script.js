@@ -91,8 +91,9 @@ async function handleCompleteTask(checkbox, taskId, isImportant) {
     rewardDisplay.innerHTML = ''; // 清空上次反馈
 
     try {
-        // ▼▼▼ 核心改动：只调用后端主逻辑函数 ▼▼▼
+        // ▼▼▼ 核心改动 在rpc调用中传入 task_id_input ▼▼▼
         const { data, error } = await supabaseClient.rpc('complete_task_and_get_reward', {
+            task_id_input: taskId, // 把任务ID传给后端
             is_important_input: isImportant
         });
 
@@ -136,7 +137,43 @@ async function handleCompleteTask(checkbox, taskId, isImportant) {
 // ⭐⭐⭐ 注意：所有旧的奖励函数(checkForReward, grantRandomReward, grantLegendaryReward)都已被删除！⭐⭐⭐
 
 async function fetchInventory() { /* ...内容不变... */ }
-async function fetchAndRenderLeaderboard() { /* ...内容不变... */ }
+// script.js
+async function fetchAndRenderLeaderboard() {
+    if (!leaderboardList) return;
+    leaderboardList.innerHTML = '<div class="leaderboard-item">加载中...</div>';
+
+    const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('*')
+        .order('rank', { ascending: true });
+
+    if (error) {
+        console.error('获取排行榜失败:', error);
+        return leaderboardList.innerHTML = '<div class="leaderboard-item" style="color: red;">加载失败</div>';
+    }
+
+    leaderboardList.innerHTML = '';
+    if (data.length === 0) {
+        leaderboardList.innerHTML = '<div class="leaderboard-item">排行榜暂无数据...</div>';
+    } else {
+        data.forEach(player => {
+            // 使用<div>而不是<li>
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'leaderboard-item';
+
+            // 强制转换为整数，并安全地构建HTML
+            const rankNumber = parseInt(player.rank, 10);
+            const rankText = isNaN(rankNumber) ? '?. ' : `${rankNumber}. `;
+
+            const rankSpan = `<span class="rank">${rankText}</span>`;
+            const userSpan = `<span class="username">${player.username}</span>`;
+            const scoreSpan = `<span class="score">${player.score}</span>`;
+
+            playerDiv.innerHTML = rankSpan + userSpan + scoreSpan;
+            leaderboardList.appendChild(playerDiv);
+        });
+    }
+}
 function updatePityCounterUI(count) { /* ...内容不变... */ }
 function updateLegendaryProgressUI(current) { /* ...内容不变... */ }
 
