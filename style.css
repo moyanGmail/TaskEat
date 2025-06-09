@@ -51,16 +51,76 @@ h1, h2, h4 {
     font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400;
 }
 
-/* --- 任务输入区 (全新美化样式) --- */
-.task-input-container {
-    display: flex; /* 使用 Flexbox 布局，让输入框和按钮水平排列 */
+/* --- 任务输入区 (Google 风格) --- */
+#add-todo-form {
+    display: flex;
+    align-items: center;
     max-width: 600px;
-    margin: 40px auto; /* 增加上下边距 */
+    margin: 40px auto 10px auto; /* 调整下方边距，为复选框留出空间 */
     background-color: var(--color-bg);
-    border-radius: var(--border-radius-md); /* 为整个容器设置圆角 */
-    box-shadow: var(--shadow-md);
+    border-radius: 99px; /* 关键：药丸形状的圆角 */
     border: 2px solid var(--color-surface);
+    padding: 6px 8px 6px 16px; /* 调整内边距，左侧为图标留空间 */
     transition: all var(--transition-speed) ease;
+    flex-wrap: wrap; /* 允许复选框换行 */
+    justify-content: center;
+}
+
+/* 当输入框或按钮被聚焦时，整个容器发光 */
+#add-todo-form:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 12px rgba(245, 206, 117, 0.4);
+}
+
+#task-input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--color-text);
+    padding: 10px;
+    font-size: 1.1em;
+    /* 通过背景图添加搜索图标 */
+    padding-left: 40px; /* 为图标腾出空间 */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23FFDA9A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 10px center;
+    min-width: 200px; /* 保证输入框在小屏幕上不会被过度压缩 */
+}
+
+#task-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.6;
+}
+
+#add-task-button {
+    flex-shrink: 0; /* 防止按钮被压缩 */
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 28px;
+    line-height: 1;
+    padding: 0;
+    margin-left: 8px; /* 与输入框的间距 */
+    /* 继承全局按钮样式，但覆盖部分属性 */
+}
+
+/* “重要任务”复选框的样式 */
+#add-todo-form label {
+    display: block;
+    width: 100%; /* 让其脱离 flex 布局，换行显示 */
+    text-align: center;
+    margin-top: 15px; /* 与输入框的距离 */
+    padding-bottom: 5px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+#add-todo-form label input {
+    margin-right: 8px;
+    vertical-align: middle;
+    transform: scale(1.2); /* 放大复选框 */
+    accent-color: var(--color-accent); /* 复选框选中颜色 */
 }
 /* 当用户聚焦在输入框时，整个容器发光 */
 .task-input-container:focus-within {
@@ -105,18 +165,19 @@ button:active {
 
 
 /* --- 任务列表美化 --- */
-#task-list {
+#task-list, #todolist-container {
     list-style-type: none; padding-left: 0; margin: 30px auto; max-width: 600px;
 }
-#task-list li {
+#task-list li, #todolist-container li {
     background-color: var(--color-surface); color: var(--color-text); padding: 15px 20px; margin-bottom: 12px; border-radius: var(--border-radius-sm); box-shadow: var(--shadow-sm); text-align: left; display: flex; align-items: center; transition: all var(--transition-speed) ease;
 }
-#task-list li:hover {
+#task-list li:hover, #todolist-container li:hover {
     transform: translateY(-2px); box-shadow: var(--shadow-md);
 }
-#task-list li::before {
+#task-list li::before, #todolist-container li::before {
     content: '☕'; font-size: 1.2em; margin-right: 15px; line-height: 1;
 }
+/* ... important-task 的样式保持不变，因为它是一个 class，不受影响 ... */
 .important-task {
     border-left: 4px solid var(--rarity-legendary); font-size: 1.1em; font-weight: 600;
 }
