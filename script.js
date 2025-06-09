@@ -130,7 +130,7 @@ async function fetchAndRenderLeaderboard() {
         data.forEach(player => {
             const li = document.createElement('li');
             li.innerHTML = `
-                <span class="rank"></span>  // <--- 让 rank 元素保持为空，CSS会自动填充序号
+                <span class="rank"></span> 
                 <span class="username">${player.username}</span>
                 <span class="score">${player.score}</span>
                 `;
