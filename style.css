@@ -155,7 +155,7 @@ button:active { transform: scale(0.98); }
 #leaderboard-list li:nth-child(2) { background-color: rgba(201, 193, 172, 0.3); border-left: 5px solid var(--rarity-common); }
 #leaderboard-list li:nth-child(3) { background-color: rgba(232, 159, 67, 0.3);  border-left: 5px solid var(--rarity-epic); }
 .rank { font-weight: bold; font-size: 1.2em; min-width: 40px; }
-.rank::before { content: counter(leaderboard_rank); counter-increment: leaderboard_rank; }
+
 .username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
 .score { font-weight: bold; color: var(--color-accent); }
 
