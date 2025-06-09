@@ -163,45 +163,61 @@ button:active {
     font-weight: bold; color: var(--color-text);
 }
 
-/* --- 排行榜 (全新主题化样式) --- */
+/* --- 排行榜 (已修复序号问题) --- */
 .leaderboard-section {
     margin-top: 40px;
     padding: 25px;
-    background-color: var(--color-surface); /* 使用主题表面颜色 */
-    border-radius: var(--border-radius-md); /* 使用主题圆角 */
-    box-shadow: var(--shadow-md); /* 使用主题阴影 */
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
 }
+
 #leaderboard-list {
     list-style: none;
     padding: 0;
+    counter-reset: leaderboard_rank; /* 1. 在这里初始化一个名为 "leaderboard_rank" 的计数器 */
 }
+
 #leaderboard-list li {
     display: flex;
     align-items: center;
     padding: 12px 15px;
     border-radius: var(--border-radius-sm);
     margin-bottom: 10px;
-    background-color: rgba(0, 0, 0, 0.2); /* 使用半透明黑色作为基础背景，增加层次感 */
+    background-color: rgba(0, 0, 0, 0.2);
     font-size: 1.1em;
-    color: var(--color-text); /* 确保文字是亮的 */
+    color: var(--color-text);
     transition: all var(--transition-speed) ease;
 }
+
 #leaderboard-list li:hover {
     transform: scale(1.02);
     box-shadow: var(--shadow-sm);
 }
+
 /* 奖牌颜色映射到主题稀有度颜色 */
 #leaderboard-list li:nth-child(1) { background-color: rgba(245, 206, 117, 0.3); border-left: 5px solid var(--rarity-legendary); } /* 金牌 */
 #leaderboard-list li:nth-child(2) { background-color: rgba(201, 193, 172, 0.3); border-left: 5px solid var(--rarity-common); } /* 银牌 */
 #leaderboard-list li:nth-child(3) { background-color: rgba(232, 159, 67, 0.3);  border-left: 5px solid var(--rarity-epic); } /* 铜牌 */
 
-.rank { font-weight: bold; font-size: 1.2em; min-width: 40px; }
-.username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
-.score { font-weight: bold; color: var(--color-accent); /* 使用主题强调色 */ }
 
+.rank {
+    font-weight: bold;
+    font-size: 1.2em;
+    min-width: 40px;
+}
+
+/* 2. 使用 ::before 伪元素来自动生成和显示排名 */
+.rank::before {
+    content: counter(leaderboard_rank); /* 3. 显示计数器的当前值 */
+    counter-increment: leaderboard_rank; /* 并且让计数器 +1 */
+}
+
+.username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
+.score { font-weight: bold; color: var(--color-accent); }
 
 /* --- 弹窗 (Modal) (全新主题化样式) --- */
 .modal-overlay {
