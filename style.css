@@ -301,3 +301,16 @@ footer {
     content: '★ '; /* 加个小星星 */
     color: #f1c40f;
 }
+
+/* style.css */
+.pity-tracker {
+    font-size: 0.9em;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#pity-value {
+    font-weight: bold;
+    color: #343a40;
+}

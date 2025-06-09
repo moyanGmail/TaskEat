@@ -14,6 +14,8 @@ console.log('Supabase客户端已初始化');
 // 全局变量，用于存储当前登录用户的信息
 let currentUser = null;
 
+
+const pityValueElement = document.getElementById('pity-value');
 // 获取所有需要操作的HTML元素
 const authSection = document.getElementById('auth-section');
 const gameSection = document.getElementById('game-section');
@@ -54,18 +56,20 @@ async function handleLogin() {
  * 当用户成功登录后，所有需要执行的操作都放在这里
  * @param {object} user - Supabase返回的用户对象
  */
-function onLoginSuccess(user) {
-    // 如果当前用户已经是这个user，就没必要重复加载，防止UI闪烁
+async function onLoginSuccess(user) { // <<<< 把函数变成 async
     if (currentUser && currentUser.id === user.id) return;
-
     currentUser = user;
     console.log("登录成功, 更新UI. 用户:", currentUser.id);
-
-    // 切换界面显示
     authSection.style.display = 'none';
     gameSection.style.display = 'block';
 
-    // 加载该用户的游戏数据
+    // 获取并更新保底计数显示
+    const { data: profile } = await supabaseClient.from('profiles').select('pity_counter').eq('id', user.id).single();
+    if (profile) {
+        updatePityCounterUI(profile.pity_counter);
+    }
+
+    // 加载用户的游戏数据
     fetchInventory();
     fetchAndRenderTodos();
 }
@@ -82,8 +86,16 @@ function onLogout() {
     gameSection.style.display = 'none';
 }
 
-
 // --- 3. Todolist 功能函数 ---
+/**
+ * 更新界面上的保底计数器显示
+ * @param {number} count - 当前的计数值
+ */
+function updatePityCounterUI(count) {
+    if (pityValueElement) {
+        pityValueElement.textContent = count;
+    }
+}
 
 /**
  * 从数据库获取并渲染当前用户的待办任务列表
@@ -208,50 +220,104 @@ async function checkForReward(wasTaskImportant) {
     }
 }
 
+// script.js
+
 /**
- * 发放一个随机奖励（包含加权随机算法）
- * @param {string} reason - 获得奖励的原因，用于UI显示
+ * (全新升级版) 发放一个随机奖励，内置“保底”机制
+ * @param {string} reason - 获得奖励的原因
  */
 async function grantRandomReward(reason) {
     console.log(`开始发放奖励，原因: ${reason}`);
     rewardDisplay.innerHTML = `<p>正在为你抽取奖励...</p>`;
+    if (!currentUser) return console.error("用户未登录，无法发放奖励");
+
+    // --- 1. 定义保底机制的常量 ---
+    const PITY_THRESHOLD = 20; // 连续20次未出货，触发保底
+    const HIGH_RARITY_CATEGORIES = ['稀有', '史诗', '传说']; // 定义哪些算“好东西”
 
     try {
-        const { data: allRewards, error: rewardsError } = await supabaseClient
-            .from('rewards')
-            .select('id, name, image_url, rarity, type');
+        // --- 2. 获取用户当前的保底进度 ---
+        const { data: profile, error: profileError } = await supabaseClient
+            .from('profiles')
+            .select('pity_counter')
+            .eq('id', currentUser.id)
+            .single();
 
-        if (rewardsError) throw rewardsError;
-        if (allRewards.length === 0) throw new Error("奖励池是空的！");
+        if (profileError) throw new Error(`获取用户保底信息失败: ${profileError.message}`);
 
-        // 定义不同稀有度的权重
-        const weights = { '普通': 70, '稀有': 25, '史诗': 5, '传说': 1 };
+        let currentPity = profile.pity_counter;
+        let randomReward;
+        let isPityPull = false; // 标记本次是否是保底触发的
 
-        // 创建加权抽奖池
-        const weightedPool = [];
-        allRewards.forEach(reward => {
-            const weight = weights[reward.rarity] || 1; // 如果物品稀有度未定义权重，默认为1
-            for (let i = 0; i < weight; i++) {
-                weightedPool.push(reward);
+        // --- 3. 检查是否触发保底 ---
+        if (currentPity >= PITY_THRESHOLD) {
+            console.warn(`保底机制触发！当前计数: ${currentPity}`);
+            isPityPull = true;
+
+            // 从高稀有度奖池中随机抽取一个
+            const { data: highRarityRewards, error: pityError } = await supabaseClient
+                .from('rewards')
+                .select('id, name, image_url, rarity, type')
+                .in('rarity', HIGH_RARITY_CATEGORIES); // .in() 是个新技巧，用于查询多个值
+
+            if (pityError || highRarityRewards.length === 0) {
+                throw new Error("保底触发，但获取高稀有度物品失败！");
             }
-        });
+            randomReward = highRarityRewards[Math.floor(Math.random() * highRarityRewards.length)];
 
-        // 从加权池中随机抽取一个奖励
-        const randomReward = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+        } else {
+            // --- 4. 未触发保底，执行常规的加权随机抽奖 ---
+            const { data: allRewards, error: rewardsError } = await supabaseClient
+                .from('rewards')
+                .select('id, name, image_url, rarity, type');
 
+            if (rewardsError) throw rewardsError;
+            if (allRewards.length === 0) throw new Error("奖励池是空的！");
+
+            const weights = { '普通': 70, '稀有': 25, '史诗': 5, '传说': 1 };
+            const weightedPool = [];
+            allRewards.forEach(reward => {
+                const weight = weights[reward.rarity] || 1;
+                for (let i = 0; i < weight; i++) {
+                    weightedPool.push(reward);
+                }
+            });
+            randomReward = weightedPool[Math.floor(Math.random() * weightedPool.length)];
+        }
+
+        // --- 5. 根据本次抽奖结果，更新保底计数器 ---
+        let newPityCounter;
+        if (HIGH_RARITY_CATEGORIES.includes(randomReward.rarity)) {
+            // 如果抽中了高稀有度物品，计数器清零
+            console.log(`抽中高稀有度物品 [${randomReward.rarity}]，保底计数器清零。`);
+            newPityCounter = 0;
+        } else {
+            // 如果没抽中，计数器+1
+            newPityCounter = currentPity + 1;
+            console.log(`未抽中高稀有度物品，保底计数器: ${newPityCounter}`);
+        }
+
+        // 将新的计数器更新到数据库
+        await supabaseClient
+            .from('profiles')
+            .update({ pity_counter: newPityCounter })
+            .eq('id', currentUser.id);
+
+
+        // --- 6. 将奖励存入仓库并更新UI (与之前类似) ---
         console.log('恭喜！抽中了:', randomReward.name, `(稀有度: ${randomReward.rarity})`);
 
-        // 将获得的奖励存入用户物品栏
-        const { error: inventoryError } = await supabaseClient
+        await supabaseClient
             .from('user_inventory')
             .insert({ user_id: currentUser.id, reward_id: randomReward.id });
 
-        if (inventoryError) throw inventoryError;
-
-        // 在UI上显示获得的奖励
         const rarityClass = `rarity-${randomReward.rarity.toLowerCase()}`;
+
+        // 如果是保底，显示特殊的提示
+        const pityTitle = isPityPull ? `<h3>恭喜你获得! <span style="color: #ff8c00; font-weight:bold;">(触发保底)</span></h3>` : `<h3>恭喜你获得!</h3>`;
+
         rewardDisplay.innerHTML = `
-            <h3>恭喜你获得! <span style="font-weight:normal; font-size: 0.8em;">(${reason})</span></h3>
+            ${pityTitle}
             <div class="reward-card ${rarityClass}">
                 <img src="${randomReward.image_url}" alt="${randomReward.name}" />
                 <h4>${randomReward.name}</h4>
@@ -260,15 +326,16 @@ async function grantRandomReward(reason) {
             </div>
         `;
 
-        // 刷新仓库显示，以包含新获得的物品
-        await fetchInventory();
+        await fetchInventory(); // 刷新仓库
+
+        // (可选) 更新UI上的保底计数器显示，见第三步
+        updatePityCounterUI(newPityCounter);
 
     } catch (error) {
         console.error('奖励发放流程出错:', error);
         rewardDisplay.innerHTML = `<p style="color:red;">哎呀，奖励发放出错了: ${error.message}</p>`;
     }
 }
-
 /**
  * 获取并显示用户的物品仓库
  */
