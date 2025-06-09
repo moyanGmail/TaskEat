@@ -113,10 +113,15 @@ async function fetchAndRenderLeaderboard() {
     leaderboardList.innerHTML = '<li>加载中...</li>';
 
     // 查询预先计算好的leaderboard表，这个查询非常快！
+    //const { data, error } = await supabaseClient
+   // .from('leaderboard')
+    //.select('username, score') // 只选择我们需要的字段
+    //.order('score', { ascending: false }); // 直接根据分数从高到低排序
     const { data, error } = await supabaseClient
-    .from('leaderboard')
-    .select('username, score') // 只选择我们需要的字段
-    .order('score', { ascending: false }); // 直接根据分数从高到低排序
+        .from('leaderboard')
+        .select('*')
+        .order('rank', { ascending: true });
+    console.log('【排行榜数据抵达浏览器】:', data);
 
     if (error) {
         console.error("获取排行榜失败:", error);
@@ -142,26 +147,20 @@ async function fetchAndRenderLeaderboard() {
 
 // --- 3. Todolist 功能函数 ---
 
-async function fetchAndRenderTodos() {
+async function fetchAndRenderLeaderboard() {
     if (!leaderboardList) return;
     leaderboardList.innerHTML = '<li>加载中...</li>';
 
-    const {data, error} = await supabaseClient
+    const { data, error } = await supabaseClient
         .from('leaderboard')
         .select('*')
-        .order('rank', {ascending: true});
-
-    // ▼▼▼▼▼ 添加这两行决定性的“监控代码” ▼▼▼▼▼
-    console.log('【Vercel 实况】刚从Supabase收到的排行榜数据:', data);
-    console.error('【Vercel 实况】获取排行榜时发生的错误:', error);
-    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        .order('rank', { ascending: true });
 
     if (error) {
-        console.error("获取排行榜失败:", error); // 这行可以保留，也可以删除
+        console.error("获取排行榜失败:", error); // 只在真正有错误时才打印
         return leaderboardList.innerHTML = '<li>加载失败</li>';
     }
 
-    // ... 后续的渲染逻辑保持不变 ...
     leaderboardList.innerHTML = '';
     if (data.length === 0) {
         leaderboardList.innerHTML = '<li>排行榜暂无数据，快去收集传说食物吧！</li>';
@@ -182,9 +181,27 @@ async function handleAddTask() {
     const taskContent = taskInput.value.trim();
     if (!taskContent) return alert("任务内容不能为空！");
     if (!currentUser) return alert("用户未登录！");
+
     const isImportant = importantCheckbox.checked;
-    const { error } = await supabaseClient.from('todos').insert({ task_content: taskContent, is_important: isImportant, user_id: currentUser.id });
-    if (error) { console.error('添加任务失败:', error); } else { taskInput.value = ''; importantCheckbox.checked = false; fetchAndRenderTodos(); }
+
+    const {error} = await supabaseClient
+        .from('todos')
+        .insert({
+            task_content: taskContent,
+            is_important: isImportant,
+            user_id: currentUser.id
+        });
+
+    if (error) {
+        console.error('添加任务失败:', error);
+    } else {
+        // ▼▼▼▼▼ 确保这部分代码存在且正确 ▼▼▼▼▼
+        console.log("任务添加成功，准备刷新列表...");
+        taskInput.value = '';
+        importantCheckbox.checked = false;
+        // 核心修复：在这里重新调用函数，以刷新任务列表的显示
+        fetchAndRenderTodos();
+    }
 }
 
 async function handleCompleteTask(checkbox, taskId, isImportant) {
