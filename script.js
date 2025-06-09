@@ -201,6 +201,15 @@ loginButton.addEventListener('click', handleLogin);
 if (logoutButton) { logoutButton.addEventListener('click', () => supabaseClient.auth.signOut()); }
 saveUsernameButton.addEventListener('click', handleSaveUsername);
 addTaskButton.addEventListener('click', handleAddTask);
+taskInput.addEventListener('keypress', function(event) {
+    // 检查用户按下的键是否是“Enter”
+    if (event.key === 'Enter') {
+        // 阻止回车键的默认行为（比如提交表单）
+        event.preventDefault();
+        // 模拟点击“添加任务”按钮
+        addTaskButton.click();
+    }
+});
 todolistContainer.addEventListener('click', (event) => {
     if (event.target.classList.contains('complete-checkbox')) {
         const checkbox = event.target;
