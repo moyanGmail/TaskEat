@@ -153,9 +153,25 @@ button:active { transform: scale(0.98); }
     padding: 12px 15px;
     border-radius: 8px;
     margin-bottom: 10px;
-    background-color: #f8f9fa;
     font-size: 1.1em;
+    border: 2px solid transparent; /* 设置一个透明的边框占位 */
+    transition: all 0.2s ease-in-out; /* 增加一点鼠标悬浮动画 */
 }
+.leaderboard-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+/* 使用边框颜色来区分前三名，模仿奖牌 */
+.leaderboard-item:nth-child(1) {
+    border-color: #FFD700; /* 金色边框 */
+}
+.leaderboard-item:nth-child(2) {
+    border-color: #C0C0C0; /* 银色边框 */
+}
+.leaderboard-item:nth-child(3) {
+    border-color: #CD7F32; /* 铜色边框 */
+}
+
 .leaderboard-section { margin-top: 40px; padding: 25px; background-color: var(--color-surface); border-radius: var(--border-radius-md); box-shadow: var(--shadow-md); max-width: 700px; margin-left: auto; margin-right: auto; }
 #leaderboard-list { list-style: none; padding: 0; counter-reset: leaderboard_rank; }
 #leaderboard-list li { display: flex; align-items: center; padding: 12px 15px; border-radius: var(--border-radius-sm); margin-bottom: 10px; background-color: rgba(0, 0, 0, 0.2); font-size: 1.1em; color: var(--color-text); transition: all var(--transition-speed) ease; }
@@ -170,9 +186,6 @@ button:active { transform: scale(0.98); }
     overflow: hidden;         /* 隐藏超出的部分 */
     text-overflow: ellipsis;  /* 超出部分用省略号显示 */}
 .score { font-weight: bold; color: var(--color-accent); }
-.leaderboard-item:nth-child(1) { background-color: #fff3cd; }
-.leaderboard-item:nth-child(2) { background-color: #e9ecef; }
-.leaderboard-item:nth-child(3) { background-color: #fce1d3; }
 
 /* --- 弹窗 (Modal) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; }
