@@ -337,3 +337,39 @@ input[type="email"]:focus {
 footer {
     margin-top: 50px; padding: 20px; color: var(--color-text-muted); font-size: 0.9em;
 }
+
+/* --- 音乐控制按钮 --- */
+#music-toggle-btn {
+    position: fixed; /* 固定在屏幕的某个位置，不随滚动条滚动 */
+    bottom: 25px;
+    right: 25px;
+    z-index: 1001; /* 确保它在其他元素之上 */
+
+    /* 尺寸和形状 */
+    width: 55px;
+    height: 55px;
+    padding: 0; /* 移除内边距，让图标居中 */
+    border-radius: 50%; /* 完美的圆形 */
+    font-size: 24px; /* 图标大小 */
+
+    /* 外观和主题 */
+    background-color: var(--color-surface); /* 使用主题表面颜色 */
+    color: var(--color-text); /* 使用主题文字颜色 */
+    border: 2px solid var(--color-surface);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+
+    /* 动画效果 */
+    transition: all var(--transition-speed) ease;
+
+    /* Flexbox 居中图标 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#music-toggle-btn:hover {
+    transform: scale(1.1) rotate(15deg); /* 悬停时放大并轻微旋转 */
+    border-color: var(--color-accent); /* 边框变为强调色 */
+    box-shadow: 0 0 15px var(--color-accent); /* 添加光晕 */
+}

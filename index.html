@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <audio id="background-music" loop>
+        <source src="coffee-music.mp3" type="audio/mpeg">
+    </audio>
 
     <div class="video-background-container">
         <video autoplay loop muted playsinline poster="poster.jpg" id="bg-video">
@@ -88,7 +91,7 @@
                 <button id="save-username-button">进入游戏</button>
             </div>
         </div>
-
+    <button id="music-toggle-btn" title="播放/静音">🔊</button>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>

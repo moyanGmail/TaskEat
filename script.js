@@ -272,3 +272,68 @@ supabaseClient.auth.onAuthStateChange((_event, session) => {
     console.log(`认证事件触发: ${_event}`);
     if (session) { onLoginSuccess(session.user); } else { onLogout(); }
 });
+
+// --- 背景音乐控制 ---
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    // 1. 获取 HTML 中的元素
+    const music = document.getElementById('background-music');
+    const musicBtn = document.getElementById('music-toggle-btn');
+
+    // 如果找不到元素，就直接退出，防止报错
+    if (!music || !musicBtn) {
+        console.log("音乐播放器或按钮未找到。");
+        return;
+    }
+
+    // 默认设置为静音状态，让用户自己选择开启
+    music.muted = true;
+    musicBtn.textContent = '🔇';
+
+    // 2. 切换静音/播放的功能函数
+    function toggleMusic() {
+        // 检查音乐当前是否是静音状态
+        const isMuted = music.muted;
+
+        if (isMuted) {
+            // 如果是静音，则取消静音并播放
+            music.muted = false;
+            // 尝试播放音乐，play()会返回一个Promise
+            music.play().catch(error => console.error("音乐播放失败:", error));
+            musicBtn.textContent = '🔊'; // 更新按钮图标为“播放”
+            musicBtn.title = '静音';
+        } else {
+            // 如果正在播放，则设置为静音
+            music.muted = true;
+            // music.pause(); // 你也可以选择暂停而不是仅静音
+            musicBtn.textContent = '🔇'; // 更新按钮图标为“静音”
+            musicBtn.title = '播放';
+        }
+    }
+
+    // 3. 为按钮添加点击事件
+    musicBtn.addEventListener('click', toggleMusic);
+
+    // 4. (推荐) 首次用户交互后自动播放
+    // 现代浏览器通常禁止自动播放音乐，直到用户与页面进行交互（如点击）
+    // 这个函数只会在第一次点击时执行一次
+    function playOnFirstInteraction() {
+        console.log("用户首次交互，尝试播放背景音乐。");
+        // 尝试播放，如果成功，浏览器后续将允许该网站播放音频
+        music.play().catch(error => {
+            // 如果播放失败（例如，在某些移动设备上），也没关系
+            // 用户仍然可以手动点击按钮来播放
+            console.log("首次自动播放失败，等待用户手动开启。");
+        });
+
+        // 播放后，移除这个一次性的事件监听器
+        document.body.removeEventListener('click', playOnFirstInteraction);
+        document.body.removeEventListener('keydown', playOnFirstInteraction);
+    }
+
+    // 为页面添加一次性的点击或键盘事件监听器
+    document.body.addEventListener('click', playOnFirstInteraction, { once: true });
+    document.body.addEventListener('keydown', playOnFirstInteraction, { once: true });
+
+});
