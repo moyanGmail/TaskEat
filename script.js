@@ -13,7 +13,10 @@ console.log('Supabase客户端已初始化');
 
 // 全局变量
 let currentUser = null;
-// script.js (顶部)
+
+const usernameModalOverlay = document.getElementById('username-modal-overlay');
+const usernameInput = document.getElementById('username-input');
+const saveUsernameButton = document.getElementById('save-username-button');
 const leaderboardList = document.getElementById('leaderboard-list');
 // 获取所有需要操作的HTML元素
 const authSection = document.getElementById('auth-section');
@@ -49,23 +52,49 @@ async function handleLogin() {
     }
 }
 
+// script.js
+
+/**
+ * (全新升级版) 用户成功登录后的“守门员”函数
+ * @param {object} user - Supabase用户对象
+ */
 async function onLoginSuccess(user) {
     if (currentUser && currentUser.id === user.id) return;
     currentUser = user;
-    console.log("登录成功, 更新UI. 用户:", currentUser.id);
-    authSection.style.display = 'none';
-    gameSection.style.display = 'block';
+    console.log("登录成功, 开始检查 Profile. 用户:", currentUser.id);
 
-    const { data: profile } = await supabaseClient.from('profiles').select('pity_counter, task_completion_counter').eq('id', user.id).single();
-    if (profile) {
-        updatePityCounterUI(profile.pity_counter);
-        updateLegendaryProgressUI(profile.task_completion_counter);
+    // 关键一步：获取用户的完整profile
+    const { data: profile, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+    if (error) {
+        return console.error("获取用户Profile失败:", error);
     }
 
-     // 加载用户的游戏数据
-    fetchInventory();
-    fetchAndRenderTodos();
-    fetchAndRenderLeaderboard(); // <<<<<< 新增调用
+    // 检查用户名是否存在
+    if (profile && profile.username) {
+        // --- 情况A: 老玩家，直接进入游戏 ---
+        console.log(`欢迎回来, ${profile.username}!`);
+        usernameModalOverlay.style.display = 'none'; // 确保弹窗是隐藏的
+        authSection.style.display = 'none';
+        gameSection.style.display = 'block';
+
+        // 加载所有游戏数据
+        updatePityCounterUI(profile.pity_counter);
+        updateLegendaryProgressUI(profile.task_completion_counter);
+        fetchInventory();
+        fetchAndRenderTodos();
+        fetchAndRenderLeaderboard();
+    } else {
+        // --- 情况B: 新玩家，强制设置用户名 ---
+        console.log("新用户或未设置用户名，弹出设置窗口。");
+        authSection.style.display = 'none';
+        gameSection.style.display = 'none'; // 隐藏游戏主界面
+        usernameModalOverlay.style.display = 'flex'; // 显示设置弹窗
+    }
 }
 
 function onLogout() {
@@ -294,6 +323,39 @@ function updateLegendaryProgressUI(current) {
 
 
 // --- 5. 事件监听与程序入口 ---
+
+/**
+ * 处理保存用户名的逻辑
+ */
+async function handleSaveUsername() {
+    const newUsername = usernameInput.value.trim();
+    if (!newUsername) {
+        return alert("昵称不能为空！");
+    }
+    if (newUsername.length > 15) {
+        return alert("昵称不能超过15个字符！");
+    }
+    if (!currentUser) return;
+
+    // 更新到数据库
+    const { error } = await supabaseClient
+        .from('profiles')
+        .update({ username: newUsername })
+        .eq('id', currentUser.id);
+
+    if (error) {
+        console.error("更新用户名失败:", error);
+        alert("设置失败，请稍后重试。");
+    } else {
+        console.log("用户名设置成功!");
+        // 重新调用 onLoginSuccess，这次因为用户名已存在，会直接进入游戏
+        onLoginSuccess(currentUser);
+    }
+}
+
+// 新增：为保存用户名按钮绑定事件
+saveUsernameButton.addEventListener('click', handleSaveUsername);
+
 
 // 绑定UI元素的点击事件
 loginButton.addEventListener('click', handleLogin);

@@ -11,10 +11,10 @@
     --color-accent: #F5CE75; /* 按钮和高光的强调色 (金焦糖色) */
 
     /* 稀有度颜色 (暖色调) */
-    --rarity-common: #c9c1ac; /* 柔和的米灰色 */
+    --rarity-common: #c9c1ac; /* 柔和的米灰色 (用于银牌) */
     --rarity-rare: #FFDA9A; /* 浅焦糖色 */
-    --rarity-epic: #e89f43; /* 铜橙色 */
-    --rarity-legendary: #F5CE75; /* 金焦糖色 */
+    --rarity-epic: #e89f43; /* 铜橙色 (用于铜牌) */
+    --rarity-legendary: #F5CE75; /* 金焦糖色 (用于金牌) */
     --rarity-legendary-glow: #ffeea8; /* 传说物品的光晕/渐变色 */
 
     /* 其他样式变量 */
@@ -27,198 +27,93 @@
 
 /* --- 视频背景 --- */
 .video-background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -2;
-    overflow: hidden;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; overflow: hidden;
 }
-
 #bg-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100%; height: 100%; object-fit: cover;
 }
-
-/* 半透明遮罩层 (暖棕色) */
 .video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(61, 36, 25, 0.65);
-    z-index: -1;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(61, 36, 25, 0.65); z-index: -1;
 }
 
 /* --- 全局样式 --- */
 body {
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    background-color: transparent; /* 移除背景色以显示视频 */
-    color: var(--color-text);
-    padding: 20px;
-    margin: 0;
+    font-family: 'Poppins', sans-serif; text-align: center; background-color: transparent; color: var(--color-text); padding: 20px; margin: 0;
 }
-
 header, main, footer {
     background-color: transparent;
 }
-
-h1, h4 {
+h1, h2, h4 {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: var(--color-text); /* 确保所有标题都是亮色 */
 }
-
 .subtitle {
-    font-size: 1.1em;
-    color: var(--color-text-muted);
-    margin-top: -15px;
-    font-weight: 400;
+    font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400;
 }
 
-/* --- 按钮样式 (焦糖色主题) --- */
+/* --- 按钮样式 (全局) --- */
 button {
-    padding: 12px 28px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    background-image: linear-gradient(45deg, var(--color-accent), #e89f43);
-    color: var(--color-bg);
-    border: none;
-    border-radius: var(--border-radius-md);
-    box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3);
-    transition: all var(--transition-speed) ease;
+    padding: 12px 28px; font-size: 18px; font-weight: 600; cursor: pointer; background-image: linear-gradient(45deg, var(--color-accent), #e89f43); color: var(--color-bg); border: none; border-radius: var(--border-radius-md); box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3); transition: all var(--transition-speed) ease;
 }
-
 button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(245, 206, 117, 0.4);
+    transform: scale(1.05); box-shadow: 0 6px 15px rgba(245, 206, 117, 0.4);
 }
-
 button:active {
     transform: scale(0.98);
 }
 
 /* --- 任务列表美化 --- */
 #task-list {
-    list-style-type: none;
-    padding-left: 0;
-    margin: 30px auto;
-    max-width: 600px;
+    list-style-type: none; padding-left: 0; margin: 30px auto; max-width: 600px;
 }
-
 #task-list li {
-    background-color: var(--color-surface);
-    color: var(--color-text);
-    padding: 15px 20px;
-    margin-bottom: 12px;
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-sm);
-    text-align: left;
-    display: flex;
-    align-items: center;
-    transition: all var(--transition-speed) ease;
+    background-color: var(--color-surface); color: var(--color-text); padding: 15px 20px; margin-bottom: 12px; border-radius: var(--border-radius-sm); box-shadow: var(--shadow-sm); text-align: left; display: flex; align-items: center; transition: all var(--transition-speed) ease;
 }
-
 #task-list li:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-2px); box-shadow: var(--shadow-md);
 }
-
 #task-list li::before {
-    content: '☕';
-    font-size: 1.2em;
-    margin-right: 15px;
-    line-height: 1;
+    content: '☕'; font-size: 1.2em; margin-right: 15px; line-height: 1;
 }
-
 .important-task {
-    border-left: 4px solid var(--rarity-legendary);
-    font-size: 1.1em;
-    font-weight: 600;
+    border-left: 4px solid var(--rarity-legendary); font-size: 1.1em; font-weight: 600;
 }
-
 .important-task::before {
-    content: '⭐';
-    font-size: 1.3em;
-    color: var(--rarity-legendary-glow);
+    content: '⭐'; font-size: 1.3em; color: var(--rarity-legendary-glow);
 }
-
 .important-task span {
    color: var(--rarity-legendary);
 }
 
 /* --- 物品库存网格 --- */
 #inventory-display {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    max-width: 1200px;
-    margin: 20px auto;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 20px auto;
 }
-
 .inventory-item {
-    border: 2px solid;
-    border-radius: var(--border-radius-sm);
-    padding: 8px;
-    background-color: var(--color-surface);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-speed) ease;
-    cursor: pointer;
+    border: 2px solid; border-radius: var(--border-radius-sm); padding: 8px; background-color: var(--color-surface); text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-sm); transition: all var(--transition-speed) ease; cursor: pointer;
 }
-
 .inventory-item:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-5px) scale(1.05); box-shadow: var(--shadow-md);
 }
-
 .inventory-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
+    width: 100%; height: auto; border-radius: 4px;
 }
-
 .item-name {
-    font-size: 13px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 5px;
-    color: var(--color-text-muted);
+    font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 5px; color: var(--color-text-muted);
 }
 
 /* --- 抽奖结果卡片 --- */
 .reward-card {
-    border: 3px solid;
-    border-radius: var(--border-radius-md);
-    padding: 24px;
-    margin-top: 20px;
-    display: inline-block;
-    background-color: var(--color-surface);
-    box-shadow: var(--shadow-md);
-    min-width: 280px;
-    transition: all var(--transition-speed) ease;
+    border: 3px solid; border-radius: var(--border-radius-md); padding: 24px; margin-top: 20px; display: inline-block; background-color: var(--color-surface); box-shadow: var(--shadow-md); min-width: 280px; transition: all var(--transition-speed) ease;
 }
-
 .reward-card h4 {
-    margin: 10px 0 5px;
-    font-size: 24px;
-    color: var(--color-text);
+    margin: 10px 0 5px; font-size: 24px;
 }
-
 .reward-card p {
-    margin: 5px 0;
-    color: var(--color-text-muted);
-    font-size: 16px;
+    margin: 5px 0; color: var(--color-text-muted); font-size: 16px;
 }
 
-/* --- 稀有度颜色应用 (暖色调) --- */
+/* --- 稀有度颜色应用 --- */
 .rarity-普通 { border-color: var(--rarity-common); }
 .rarity-普通 .rarity-text { color: var(--rarity-common); }
 .rarity-稀有 { border-color: var(--rarity-rare); }
@@ -226,165 +121,58 @@ button:active {
 .rarity-史诗 { border-color: var(--rarity-epic); }
 .rarity-史诗 .rarity-text { color: var(--rarity-epic); }
 .rarity-传说 {
-    border-color: var(--rarity-legendary);
-    box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
+    border-color: var(--rarity-legendary); box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
 }
 .rarity-传说 .rarity-text {
-    color: var(--rarity-legendary);
-    text-shadow: 0 0 5px var(--rarity-legendary-glow);
+    color: var(--rarity-legendary); text-shadow: 0 0 5px var(--rarity-legendary-glow);
 }
-
 @keyframes legendary-glow {
-    0% {
-        box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
-        border-color: var(--rarity-legendary);
-    }
-    50% {
-        box-shadow: 0 0 25px var(--rarity-legendary-glow), 0 0 40px var(--rarity-legendary-glow);
-        border-color: var(--rarity-legendary-glow);
-    }
-    100% {
-        box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
-        border-color: var(--rarity-legendary);
-    }
+    0% { box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow); border-color: var(--rarity-legendary); }
+    50% { box-shadow: 0 0 25px var(--rarity-legendary-glow), 0 0 40px var(--rarity-legendary-glow); border-color: var(--rarity-legendary-glow); }
+    100% { box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow); border-color: var(--rarity-legendary); }
 }
-
 .reward-card.rarity-传说 {
     animation: legendary-glow 2.5s infinite ease-in-out;
 }
 
 /* --- 反馈信息提示框 --- */
 .feedback-message {
-    padding: 15px 20px;
-    margin: 20px auto;
-    border-radius: var(--border-radius-sm);
-    font-size: 1.1em;
-    max-width: 600px;
-    background-color: rgba(105, 51, 41, 0.85);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    color: var(--color-text);
-    border: 1px solid rgba(255, 218, 154, 0.3);
-    box-shadow: var(--shadow-sm);
-    text-align: left;
-    border-left: 4px solid var(--color-accent);
+    padding: 15px 20px; margin: 20px auto; border-radius: var(--border-radius-sm); font-size: 1.1em; max-width: 600px; background-color: rgba(105, 51, 41, 0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); color: var(--color-text); border: 1px solid rgba(255, 218, 154, 0.3); box-shadow: var(--shadow-sm); text-align: left; border-left: 4px solid var(--color-accent);
 }
-
 .feedback-message.error {
-    background-color: rgba(139, 42, 42, 0.85);
-    color: #fff;
-    border-left-color: #f8d7da;
+    background-color: rgba(139, 42, 42, 0.85); color: #fff; border-left-color: #f8d7da;
 }
-
 .progress-highlight {
-    font-weight: bold;
-    color: var(--color-accent);
-    text-shadow: 0 0 5px var(--rarity-legendary-glow);
-    font-size: 1.2em;
+    font-weight: bold; color: var(--color-accent); text-shadow: 0 0 5px var(--rarity-legendary-glow); font-size: 1.2em;
 }
 
-/* --- 传说保底进度条 (全新主题化样式) --- */
+/* --- 传说保底进度条 --- */
 .legendary-pity-tracker {
-    margin: 30px auto 20px; /* 增加上边距 */
-    text-align: center;
-    max-width: 400px; /* 限制宽度使其更精致 */
+    margin: 30px auto 20px; text-align: center; max-width: 400px;
 }
-
 .legendary-pity-tracker span {
-    font-size: 0.9em;
-    color: var(--color-text-muted); /* 使用主题中的辅助文字颜色 */
+    font-size: 0.9em; color: var(--color-text-muted);
 }
-
 .progress-bar-container {
-    /* 使用半透明的背景色，创建轨道效果 */
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 244, 199, 0.15); /* 添加微妙的边框 */
-    border-radius: var(--border-radius-sm); /* 与主题统一的圆角 */
-    height: 18px; /* 稍微加高一点，更有质感 */
-    width: 100%; /* 让容器占满100%宽度 */
-    margin: 8px auto;
-    overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4); /* 添加内阴影增加深度 */
+    background-color: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 244, 199, 0.15); border-radius: var(--border-radius-sm); height: 18px; width: 100%; margin: 8px auto; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
 }
-
 #legendary-progress-bar {
-    height: 100%;
-    /* 使用主题中的传说和史诗颜色创建华丽的渐变 */
-    background: linear-gradient(90deg, var(--rarity-epic), var(--rarity-legendary));
-    border-radius: var(--border-radius-sm);
-    transition: width 0.5s ease-in-out;
+    height: 100%; background: linear-gradient(90deg, var(--rarity-epic), var(--rarity-legendary)); border-radius: var(--border-radius-sm); transition: width 0.5s ease-in-out;
 }
-
 #legendary-progress-text {
-    font-weight: bold;
-    color: var(--color-text); /* 使用主题中的主文字颜色，确保清晰 */
+    font-weight: bold; color: var(--color-text);
 }
 
-
-/* --- 其他组件 --- */
-.form-group {
-    margin: 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-
-label {
-    font-size: 1em;
-    color: var(--color-text-muted);
-}
-
-input[type="email"] {
-    padding: 10px 15px;
-    border: 2px solid var(--color-surface);
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    border-radius: var(--border-radius-sm);
-    width: 80%;
-    max-width: 300px;
-    text-align: center;
-    font-size: 1em;
-    transition: all var(--transition-speed) ease;
-}
-
-input[type="email"]:focus {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 10px rgba(245, 206, 117, 0.5);
-}
-
-.pity-tracker {
-    font-size: 0.9em;
-    color: var(--color-text-muted);
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-#pity-value {
-    font-weight: bold;
-    color: var(--color-text);
-}
-
-footer {
-    margin-top: 50px;
-    padding: 20px;
-    color: var(--color-text-muted);
-    font-size: 0.9em;
-}
-
-/* style.css */
+/* --- 排行榜 (全新主题化样式) --- */
 .leaderboard-section {
     margin-top: 40px;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.leaderboard-section h2 {
-    text-align: center;
-    color: #4a4a4a;
-    margin-bottom: 20px;
+    padding: 25px;
+    background-color: var(--color-surface); /* 使用主题表面颜色 */
+    border-radius: var(--border-radius-md); /* 使用主题圆角 */
+    box-shadow: var(--shadow-md); /* 使用主题阴影 */
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 #leaderboard-list {
     list-style: none;
@@ -394,15 +182,99 @@ footer {
     display: flex;
     align-items: center;
     padding: 12px 15px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-sm);
     margin-bottom: 10px;
-    background-color: #f8f9fa;
+    background-color: rgba(0, 0, 0, 0.2); /* 使用半透明黑色作为基础背景，增加层次感 */
     font-size: 1.1em;
+    color: var(--color-text); /* 确保文字是亮的 */
+    transition: all var(--transition-speed) ease;
 }
-#leaderboard-list li:nth-child(1) { background-color: #fff3cd; } /* 金牌 */
-#leaderboard-list li:nth-child(2) { background-color: #e9ecef; } /* 银牌 */
-#leadercode-list li:nth-child(3) { background-color: #fce1d3; } /* 铜牌 */
+#leaderboard-list li:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-sm);
+}
+/* 奖牌颜色映射到主题稀有度颜色 */
+#leaderboard-list li:nth-child(1) { background-color: rgba(245, 206, 117, 0.3); border-left: 5px solid var(--rarity-legendary); } /* 金牌 */
+#leaderboard-list li:nth-child(2) { background-color: rgba(201, 193, 172, 0.3); border-left: 5px solid var(--rarity-common); } /* 银牌 */
+#leaderboard-list li:nth-child(3) { background-color: rgba(232, 159, 67, 0.3);  border-left: 5px solid var(--rarity-epic); } /* 铜牌 */
 
 .rank { font-weight: bold; font-size: 1.2em; min-width: 40px; }
 .username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
-.score { font-weight: bold; color: #007bff; }
+.score { font-weight: bold; color: var(--color-accent); /* 使用主题强调色 */ }
+
+
+/* --- 弹窗 (Modal) (全新主题化样式) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px); /* 添加毛玻璃效果 */
+    -webkit-backdrop-filter: blur(8px); /* 兼容 Safari */
+    display: none; /* JS控制显示 */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: var(--color-surface); /* 使用主题表面颜色 */
+    padding: 30px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    border-top: 5px solid var(--color-accent); /* 添加顶部装饰条 */
+}
+/* 弹窗内的输入框，继承通用样式 */
+.modal-content input {
+    /* 沿用已有的输入框样式 */
+    display: block;
+    box-sizing: border-box; /* 确保 padding 不会撑大宽度 */
+    padding: 12px 15px;
+    margin: 20px 0;
+    border: 2px solid var(--color-bg);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--border-radius-sm);
+    width: 100%;
+    text-align: center;
+    font-size: 1em;
+    transition: all var(--transition-speed) ease;
+}
+.modal-content input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px rgba(245, 206, 117, 0.5);
+}
+/* 弹窗内的按钮，继承全局按钮样式 */
+.modal-content button {
+    width: 100%; /* 让按钮填满弹窗宽度 */
+    margin-top: 10px;
+    /* 其他样式将自动从全局 button 继承 */
+}
+
+/* --- 其他组件 --- */
+.form-group {
+    margin: 20px 0; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+label {
+    font-size: 1em; color: var(--color-text-muted);
+}
+input[type="email"] {
+    padding: 10px 15px; border: 2px solid var(--color-surface); background-color: var(--color-bg); color: var(--color-text); border-radius: var(--border-radius-sm); width: 80%; max-width: 300px; text-align: center; font-size: 1em; transition: all var(--transition-speed) ease;
+}
+input[type="email"]:focus {
+    outline: none; border-color: var(--color-accent); box-shadow: 0 0 10px rgba(245, 206, 117, 0.5);
+}
+.pity-tracker {
+    font-size: 0.9em; color: var(--color-text-muted); text-align: center; margin-bottom: 15px;
+}
+#pity-value {
+    font-weight: bold; color: var(--color-text);
+}
+footer {
+    margin-top: 50px; padding: 20px; color: var(--color-text-muted); font-size: 0.9em;
+}
