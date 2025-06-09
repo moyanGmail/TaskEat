@@ -1,63 +1,21 @@
 /* 引入一个更现代、圆润的 Google 字体 */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* --- 添加到 style.css 开头 --- */
-
-/* 视频背景容器 */
-.video-background-container {
-    position: fixed; /* 固定在视口，不随滚动条滚动 */
-    top: 0;
-    left: 0;
-    width: 100vw; /* 100% 视口宽度 */
-    height: 100vh; /* 100% 视口高度 */
-    z-index: -2; /* 把它放在最底层 */
-    overflow: hidden; /* 防止视频溢出 */
-}
-
-#bg-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 关键！保持宽高比的同时填满整个容器，可能会裁剪部分视频内容 */
-}
-
-/* 半透明遮罩层 */
-.video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(26, 26, 46, 0.7); /* 藏青色半透明，0.7是透明度，可以调整 */
-    z-index: -1; /* 确保它在视频之上，但在你的内容之下 */
-}
-
-/* 移除 body 的背景色，否则会遮住视频 */
-body {
-    /* ... 你body原有的其他样式，如 font-family, color 等保持不变 ... */
-    background-color: transparent; /* 或者直接删除 background-color 这一行 */
-}
-
-/* 确保你的主要内容容器有透明背景 */
-header, main, footer {
-    background-color: transparent;
-}
-
-
-/* --- CSS 变量定义 --- */
+/* --- CSS 变量定义 (全新焦糖布丁主题) --- */
 :root {
     /* 基础颜色 */
-    --color-bg: #1a1a2e; /* 深邃的藏青色背景 */
-    --color-surface: #2a2a3e; /* 卡片和元素的表面颜色 */
-    --color-text: #e0e0e0; /* 主要文字颜色 */
-    --color-text-muted: #9a9aae; /* 辅助性文字颜色 */
-    --color-accent: #4a8dff; /* 按钮和高光的强调色 */
+    --color-bg: #4d2f2a; /* 更柔和的深棕色背景，营造舒适感 */
+    --color-surface: #693329; /* 卡片和元素的表面颜色 (主棕色) */
+    --color-text: #FFF4C7; /* 主要文字颜色 (淡奶油色) */
+    --color-text-muted: #FFDA9A; /* 辅助性文字颜色 (浅焦糖色) */
+    --color-accent: #F5CE75; /* 按钮和高光的强调色 (金焦糖色) */
 
-    /* 稀有度颜色 */
-    --rarity-common: #b0b0b0;
-    --rarity-rare: #5a9cff;
-    --rarity-epic: #c56eff;
-    --rarity-legendary: #ffc65a;
-    --rarity-legendary-glow: #ffe86e; /* 传说物品的光晕/渐变色 */
+    /* 稀有度颜色 (暖色调) */
+    --rarity-common: #c9c1ac; /* 柔和的米灰色 */
+    --rarity-rare: #FFDA9A; /* 浅焦糖色 */
+    --rarity-epic: #e89f43; /* 铜橙色 */
+    --rarity-legendary: #F5CE75; /* 金焦糖色 */
+    --rarity-legendary-glow: #ffeea8; /* 传说物品的光晕/渐变色 */
 
     /* 其他样式变量 */
     --border-radius-sm: 8px;
@@ -67,24 +25,143 @@ header, main, footer {
     --transition-speed: 0.3s;
 }
 
+/* --- 视频背景 --- */
+.video-background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2;
+    overflow: hidden;
+}
+
+#bg-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 半透明遮罩层 (已更新为暖棕色) */
+.video-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 使用深棕色半透明，更能融入咖啡馆暖色调 */
+    background-color: rgba(61, 36, 25, 0.65);
+    z-index: -1;
+}
+
 /* --- 全局样式 --- */
 body {
-    font-family: 'Poppins', sans-serif; /* 使用引入的字体 */
+    font-family: 'Poppins', sans-serif;
     text-align: center;
-    background-color: var(--color-bg);
+    background-color: transparent; /* 移除背景色以显示视频 */
     color: var(--color-text);
     padding: 20px;
     margin: 0;
+}
+
+header, main, footer {
+    background-color: transparent;
 }
 
 h1, h4 {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+.subtitle {
+    font-size: 1.1em;
+    color: var(--color-text-muted);
+    margin-top: -15px;
+    font-weight: 400;
+}
+
+/* --- 按钮样式 (全新焦糖色主题) --- */
+button {
+    padding: 12px 28px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    /* 焦糖到琥珀色的温暖渐变 */
+    background-image: linear-gradient(45deg, var(--color-accent), #e89f43);
+    color: var(--color-bg); /* 深色文字在亮按钮上更清晰 */
+    border: none;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3);
+    transition: all var(--transition-speed) ease;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(245, 206, 117, 0.4);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* --- 任务列表美化 --- */
+#task-list {
+    list-style-type: none; /* 移除默认的小圆点 */
+    padding-left: 0;       /* 移除默认的左侧内边距 */
+    margin: 30px auto;
+    max-width: 600px;
+}
+
+#task-list li {
+    background-color: var(--color-surface);
+    color: var(--color-text); /* 确保列表项中的文字是亮的 */
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    transition: all var(--transition-speed) ease;
+}
+
+#task-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* 使用 ::before 伪元素添加自定义图标 */
+#task-list li::before {
+    content: '☕'; /* 使用咖啡杯图标，更贴合主题 */
+    font-size: 1.2em;
+    margin-right: 15px;
+    line-height: 1;
+}
+
+/* 重要任务样式 (字体更大) */
+.important-task {
+    border-left: 4px solid var(--rarity-legendary);
+    font-size: 1.1em; /* 让重要任务字体更大 */
+    font-weight: 600;
+}
+
+.important-task::before {
+    content: '⭐'; /* 重要任务使用星星图标 */
+    font-size: 1.3em;
+    color: var(--rarity-legendary-glow);
+}
+
+/* 隐藏 .important-task span 内的文字，因为我们用图标了 */
+.important-task span {
+   /* 我们不再需要原来的 span 里的星星和文字了，可以考虑在HTML中移除或在此处隐藏 */
+   /* 如果你还想保留 span 里的文字，可以调整这里的样式 */
+   color: var(--rarity-legendary); /* 让文字颜色和边框匹配 */
+}
+
+
 /* --- 物品库存网格 --- */
 #inventory-display {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* 物品格子稍大一些 */
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 20px;
     padding: 20px;
     max-width: 1200px;
@@ -92,7 +169,7 @@ h1, h4 {
 }
 
 .inventory-item {
-    border: 2px solid; /* 边框颜色由稀有度类决定 */
+    border: 2px solid;
     border-radius: var(--border-radius-sm);
     padding: 8px;
     background-color: var(--color-surface);
@@ -105,14 +182,14 @@ h1, h4 {
 }
 
 .inventory-item:hover {
-    transform: translateY(-5px) scale(1.05); /* 悬停时上浮并放大 */
+    transform: translateY(-5px) scale(1.05);
     box-shadow: var(--shadow-md);
 }
 
 .inventory-item img {
     width: 100%;
     height: auto;
-    border-radius: 4px; /* 图片也加个小圆角 */
+    border-radius: 4px;
 }
 
 .item-name {
@@ -124,32 +201,9 @@ h1, h4 {
     color: var(--color-text-muted);
 }
 
-/* --- 按钮样式 --- */
-button {
-    padding: 12px 28px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    background-image: linear-gradient(45deg, var(--color-accent), #6a5af9);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-md);
-    box-shadow: 0 4px 10px rgba(74, 141, 255, 0.3);
-    transition: all var(--transition-speed) ease;
-}
-
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(74, 141, 255, 0.4);
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
 /* --- 抽奖结果卡片 --- */
 .reward-card {
-    border: 3px solid; /* 边框更粗，更醒目 */
+    border: 3px solid;
     border-radius: var(--border-radius-md);
     padding: 24px;
     margin-top: 20px;
@@ -163,6 +217,7 @@ button:active {
 .reward-card h4 {
     margin: 10px 0 5px;
     font-size: 24px;
+    color: var(--color-text); /* 确保标题是亮的 */
 }
 
 .reward-card p {
@@ -171,7 +226,7 @@ button:active {
     font-size: 16px;
 }
 
-/* --- 稀有度颜色应用 --- */
+/* --- 稀有度颜色应用 (暖色调) --- */
 /* 普通 */
 .rarity-普通 { border-color: var(--rarity-common); }
 .rarity-普通 .rarity-text { color: var(--rarity-common); }
@@ -184,19 +239,17 @@ button:active {
 .rarity-史诗 { border-color: var(--rarity-epic); }
 .rarity-史诗 .rarity-text { color: var(--rarity-epic); }
 
-/* 传说 - 特殊效果！ */
+/* 传说 - 特殊效果 */
 .rarity-传说 {
     border-color: var(--rarity-legendary);
-    /* 添加光晕效果 */
     box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
 }
 .rarity-传说 .rarity-text {
     color: var(--rarity-legendary);
-    /* 文字也发光 */
     text-shadow: 0 0 5px var(--rarity-legendary-glow);
 }
 
-/* 为“传说”奖励卡片添加呼吸光晕动画 */
+/* “传说”奖励卡片呼吸光晕动画 */
 @keyframes legendary-glow {
     0% {
         box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
@@ -216,17 +269,8 @@ button:active {
     animation: legendary-glow 2.5s infinite ease-in-out;
 }
 
-/* --- 添加到 style.css 末尾 --- */
 
-/* 页面副标题样式 */
-.subtitle {
-    font-size: 1.1em;
-    color: var(--color-text-muted);
-    margin-top: -15px;
-    font-weight: 400;
-}
-
-/* 输入框和标签的容器，方便布局 */
+/* --- 其他组件 --- */
 .form-group {
     margin: 20px 0;
     display: flex;
@@ -256,33 +300,19 @@ input[type="email"] {
 input[type="email"]:focus {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: 0 0 10px rgba(74, 141, 255, 0.5);
+    box-shadow: 0 0 10px rgba(245, 206, 117, 0.5);
 }
 
-/* 视觉上隐藏元素，但对屏幕阅读器保持可见 (用于辅助功能) */
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-}
-
-/* 次要按钮样式 (例如退出按钮) */
-.button-secondary {
-    background: transparent;
-    border: 2px solid var(--color-text-muted);
+.pity-tracker {
+    font-size: 0.9em;
     color: var(--color-text-muted);
-    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
-.button-secondary:hover {
-    background: var(--color-surface);
+#pity-value {
+    font-weight: bold;
     color: var(--color-text);
-    border-color: var(--color-text);
 }
 
 footer {
@@ -290,27 +320,4 @@ footer {
     padding: 20px;
     color: var(--color-text-muted);
     font-size: 0.9em;
-}
-
-/* style.css */
-.important-task span {
-    font-weight: bold;
-    color: #c0392b; /* 一点红色 */
-}
-.important-task span::before {
-    content: '★ '; /* 加个小星星 */
-    color: #f1c40f;
-}
-
-/* style.css */
-.pity-tracker {
-    font-size: 0.9em;
-    color: #6c757d;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-#pity-value {
-    font-weight: bold;
-    color: #343a40;
 }
