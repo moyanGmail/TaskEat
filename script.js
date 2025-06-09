@@ -220,24 +220,17 @@ async function fetchAndRenderLeaderboard() {
     console.log('【排行榜数据抵达浏览器】:', data);
 
     leaderboardList.innerHTML = '';
-    if (data.length === 0) { leaderboardList.innerHTML = '<li>排行榜暂无数据...</li>'; } else { data.forEach(player => {
+    if (data.length === 0) { leaderboardList.innerHTML = '<li>排行榜暂无数据...</li>'; }
+    else { data.forEach(player => {
         const li = document.createElement('li');
-        // ▼▼▼▼▼ 使用更健壮的渲染方式 ▼▼▼▼▼
-            // 1. 强制将rank转换为整数
-            const rankNumber = parseInt(player.rank, 10);
 
-            // 2. 如果转换失败（虽然不太可能），则显示问号，否则正常显示
-            const rankText = isNaN(rankNumber) ? '?. ' : `${rankNumber}. `;
+        li.innerHTML = `
+        <span class="rank"></span> 
+        <span class="username">${player.username}</span>
+        <span class="score">${player.score}</span>
+        `;
 
-            // 3. 安全地构建HTML内容
-            const rankSpan = `<span class="rank">${rankText}</span>`;
-            const userSpan = `<span class="username">${player.username}</span>`;
-            const scoreSpan = `<span class="score">${player.score}</span>`;
-
-            li.innerHTML = rankSpan + userSpan + scoreSpan;
-            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-            leaderboardList.appendChild(li); }); }
+        leaderboardList.appendChild(li); }); }
 }
 
 function updatePityCounterUI(count) {

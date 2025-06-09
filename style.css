@@ -254,7 +254,7 @@ button:active {
 
 /* 2. 使用 ::before 伪元素来自动生成和显示排名 */
 .rank::before {
-    content: counter(leaderboard_rank); /* 3. 显示计数器的当前值 */
+    content: counter(leaderboard_rank); /* 显示计数器的当前值 */
     counter-increment: leaderboard_rank; /* 并且让计数器 +1 */
 }
 
