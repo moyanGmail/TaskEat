@@ -136,30 +136,69 @@ async function fetchAndRenderTodos() {
     }
 }
 
+// script.js
+
 /**
- * 处理用户点击“添加任务”按钮
+ * (V2版 - 内置防作弊冷却机制) 处理用户点击“完成任务”的复选框
+ * @param {HTMLElement} checkbox - 被点击的复选框元素
+ * @param {string} taskId - 被完成任务的ID
+ * @param {boolean} isImportant - 被完成任务是否是重要任务
  */
-async function handleAddTask() {
-    const taskContent = taskInput.value.trim();
-    if (!taskContent) return alert("任务内容不能为空！");
-    if (!currentUser) return alert("用户未登录！");
+async function handleCompleteTask(checkbox, taskId, isImportant) {
+    if (!currentUser) return;
 
-    const isImportant = importantCheckbox.checked;
+    try {
+        // --- 1. 时间守卫检查 ---
+        const MIN_INTERVAL_SECONDS = 60; // 设置冷却时间为60秒
 
-    const { error } = await supabaseClient
-        .from('todos')
-        .insert({
-            task_content: taskContent,
-            is_important: isImportant,
-            user_id: currentUser.id
-        });
+        // 从数据库获取上次完成任务的时间
+        const { data: profile, error: profileError } = await supabaseClient
+            .from('profiles')
+            .select('last_task_completion_at')
+            .eq('id', currentUser.id)
+            .single();
 
-    if (error) {
-        console.error('添加任务失败:', error);
-    } else {
-        taskInput.value = '';
-        importantCheckbox.checked = false;
-        fetchAndRenderTodos(); // 添加成功后，立即刷新任务列表
+        if (profileError) throw new Error("获取用户信息失败，无法校验时间。");
+
+        if (profile.last_task_completion_at) {
+            const lastCompletionTime = new Date(profile.last_task_completion_at);
+            const now = new Date();
+            const secondsSinceLast = (now - lastCompletionTime) / 1000;
+
+            if (secondsSinceLast < MIN_INTERVAL_SECONDS) {
+                const timeLeft = Math.ceil(MIN_INTERVAL_SECONDS - secondsSinceLast);
+                console.warn(`至少要等1分钟哦！不可以作弊~ 冷却时间剩余: ${timeLeft}秒`);
+                // 提供优雅的UI反馈，而不是用alert()
+                rewardDisplay.innerHTML = `<p class="feedback-message error">操作太快了！请在 ${timeLeft} 秒后重试。</p>`;
+                // 将复选框恢复可用状态，因为任务并未完成
+                checkbox.disabled = false;
+                return; // 中断函数执行
+            }
+        }
+
+        // --- 2. 如果通过检查，立即更新时间戳（“锁定”本次操作）---
+        const { error: updateTimestampError } = await supabaseClient
+            .from('profiles')
+            .update({ last_task_completion_at: new Date().toISOString() })
+            .eq('id', currentUser.id);
+
+        if (updateTimestampError) throw new Error("更新任务时间戳失败。");
+
+        // --- 3. 执行原有的任务完成逻辑 ---
+        const { error: updateTaskError } = await supabaseClient
+            .from('todos')
+            .update({ is_complete: true })
+            .eq('id', taskId);
+
+        if (updateTaskError) throw new Error("更新任务状态失败。");
+
+        fetchAndRenderTodos(); // 重新渲染UI
+        checkForReward(isImportant); // 检查奖励
+
+    } catch (error) {
+        console.error("完成任务流程出错:", error);
+        rewardDisplay.innerHTML = `<p class="feedback-message error">哎呀，出错了: ${error.message}</p>`;
+        checkbox.disabled = false; // 出错时也应该让用户能重试
     }
 }
 
@@ -472,14 +511,19 @@ loginButton.addEventListener('click', handleLogin);
 addTaskButton.addEventListener('click', handleAddTask);
 
 // 为整个任务列表容器设置一个事件监听器（事件委托）
+// script.js (事件监听区)
+
 todolistContainer.addEventListener('click', (event) => {
-    // 只响应对class为`complete-checkbox`的元素的点击
     if (event.target.classList.contains('complete-checkbox')) {
         const checkbox = event.target;
         checkbox.disabled = true; // 点击后立即禁用，防止重复触发
+
         const taskId = checkbox.dataset.taskId;
-        const isImportant = checkbox.dataset.isImportant === 'true'; // 将字符串转为布尔值
-        handleCompleteTask(taskId, isImportant);
+        const isImportant = checkbox.dataset.isImportant === 'true';
+
+        // ▼▼▼▼▼ 核心修改 ▼▼▼▼▼
+        // 将checkbox元素本身也传递给函数
+        handleCompleteTask(checkbox, taskId, isImportant);
     }
 });
 
