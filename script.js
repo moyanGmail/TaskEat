@@ -216,16 +216,54 @@ async function fetchInventory() {
     if (data.length === 0) { inventoryDisplay.innerHTML = '<p>你的收藏还是空的，快去完成任务吧！</p>'; } else { data.forEach(item => { const reward = item.rewards; if (!reward) return; const rarityClass = `rarity-${reward.rarity.toLowerCase()}`; const itemDiv = document.createElement('div'); itemDiv.className = `inventory-item ${rarityClass}`; itemDiv.title = `${reward.name}\n稀有度: ${reward.rarity}\n类别: ${reward.type}`; itemDiv.innerHTML = `<img src="${reward.image_url}" alt="${reward.name}" /><div class="item-name">${reward.name}</div>`; inventoryDisplay.appendChild(itemDiv); }); }
 }
 
+// script.js
+
+/**
+ * (V2版 - 内置超时检测) 获取并渲染排行榜数据
+ */
 async function fetchAndRenderLeaderboard() {
     if (!leaderboardList) return;
     leaderboardList.innerHTML = '<li>加载中...</li>';
-    const { data, error } = await supabaseClient.from('leaderboard').select('*').order('rank', { ascending: true });
-    if (error) { return console.error('获取排行榜失败:', error); }
-    leaderboardList.innerHTML = '';
-    if (data.length === 0) {
-        leaderboardList.innerHTML = '<li>排行榜暂无数据...</li>';
-    } else {
-        data.forEach(player => { const li = document.createElement('li'); li.innerHTML = `<span class="rank">${player.rank}.</span><span class="username">${player.username}</span><span class="score">${player.score}</span>`; leaderboardList.appendChild(li); });
+
+    try {
+        // 创建一个8秒后必定会失败的“超时承诺”
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('请求超时！数据库可能因RLS策略而卡住')), 8000) // 8秒后报错
+        );
+
+        // 创建Supabase的查询“承诺”
+        const supabasePromise = supabaseClient
+            .from('leaderboard')
+            .select('*')
+            .order('rank', { ascending: true });
+
+        // 让数据库查询和超时承诺赛跑，谁先完成就用谁的结果
+        const { data, error } = await Promise.race([supabasePromise, timeoutPromise]);
+
+        // 如果Supabase先返回错误，或者超时承诺先触发，都会进入下面的throw
+        if (error) {
+            throw error;
+        }
+
+        // --- 如果成功，执行正常的渲染逻辑 ---
+        leaderboardList.innerHTML = '';
+        if (data.length === 0) {
+            leaderboardList.innerHTML = '<li>排行榜暂无数据，快去成为第一人吧！</li>';
+        } else {
+            data.forEach(player => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="rank">${player.rank}.</span>
+                    <span class="username">${player.username}</span>
+                    <span class="score">${player.score}</span>
+                `;
+                leaderboardList.appendChild(li);
+            });
+        }
+    } catch (error) {
+        // 捕获所有错误，包括我们自己设置的“请求超时”错误
+        console.error("获取排行榜失败:", error);
+        leaderboardList.innerHTML = `<li style="color: red;">加载失败: ${error.message}</li>`;
     }
 }
 
