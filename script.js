@@ -169,29 +169,45 @@ async function fetchInventory() {
     if (data.length === 0) { inventoryDisplay.innerHTML = '<p>你的收藏还是空的...</p>'; } else { data.forEach(item => { const reward = item.rewards; if (!reward) return; const rarityClass = `rarity-${reward.rarity.toLowerCase()}`; const itemDiv = document.createElement('div'); itemDiv.className = `inventory-item ${rarityClass}`; itemDiv.title = `${reward.name}\n稀有度: ${reward.rarity}\n类别: ${reward.type}`; itemDiv.innerHTML = `<img src="${reward.image_url}" alt="${reward.name}" /><div class="item-name">${reward.name}</div>`; inventoryDisplay.appendChild(itemDiv); }); }
 }
 
+// script.js
+
 async function fetchAndRenderLeaderboard() {
     if (!leaderboardList) return;
     leaderboardList.innerHTML = '<div class="leaderboard-item">加载中...</div>';
-    const { data, error } = await supabaseClient.from('leaderboard').select('*').order('rank', { ascending: true });
-    if (error) { console.error('获取排行榜失败:', error); return leaderboardList.innerHTML = '<div class="leaderboard-item" style="color: red;">加载失败</div>'; }
+
+    const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('*')
+        .order('rank', { ascending: true });
+
+    if (error) {
+        console.error('获取排行榜失败:', error);
+        return leaderboardList.innerHTML = '<div class="leaderboard-item" style="color: red;">加载失败</div>';
+    }
+
     leaderboardList.innerHTML = '';
     if (data.length === 0) {
         leaderboardList.innerHTML = '<div class="leaderboard-item">排行榜暂无数据...</div>';
     } else {
         data.forEach(player => {
             const playerDiv = document.createElement('div');
+
+            // ▼▼▼▼▼ 关键修复：就是这一行！我们给div加上了class名 ▼▼▼▼▼
             playerDiv.className = 'leaderboard-item';
+            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
             const rankNumber = parseInt(player.rank, 10);
             const rankText = isNaN(rankNumber) ? '?. ' : `${rankNumber}. `;
+
             const rankSpan = `<span class="rank">${rankText}</span>`;
             const userSpan = `<span class="username">${player.username}</span>`;
             const scoreSpan = `<span class="score">${player.score}</span>`;
+
             playerDiv.innerHTML = rankSpan + userSpan + scoreSpan;
             leaderboardList.appendChild(playerDiv);
         });
     }
 }
-
 function updatePityCounterUI(count) { if (pityValueElement) { pityValueElement.textContent = count; } }
 function updateLegendaryProgressUI(current) { const max = 50; if (legendaryProgressBar && legendaryProgressText) { const percentage = Math.min((current / max) * 100, 100); legendaryProgressBar.style.width = `${percentage}%`; legendaryProgressText.textContent = `${current} / ${max}`; } }
 function updateStaminaUI(current, max) { if (!staminaBarInner || !staminaText) return; const percentage = Math.max(0, (current / max) * 100); staminaBarInner.style.width = `${percentage}%`; staminaText.textContent = `${current} / ${max}`; }

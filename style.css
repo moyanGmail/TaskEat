@@ -164,8 +164,15 @@ button:active { transform: scale(0.98); }
 #leaderboard-list li:nth-child(2) { background-color: rgba(201, 193, 172, 0.3); border-left: 5px solid var(--rarity-common); }
 #leaderboard-list li:nth-child(3) { background-color: rgba(232, 159, 67, 0.3);  border-left: 5px solid var(--rarity-epic); }
 .rank { font-weight: bold; font-size: 1.2em; min-width: 40px; }
-.username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
+.username {  flex-grow: 1;
+    margin-left: 15px;      /* 在排名和用户名之间增加一点间距 */
+    white-space: nowrap;      /* 防止用户名过长时换行 */
+    overflow: hidden;         /* 隐藏超出的部分 */
+    text-overflow: ellipsis;  /* 超出部分用省略号显示 */}
 .score { font-weight: bold; color: var(--color-accent); }
+.leaderboard-item:nth-child(1) { background-color: #fff3cd; }
+.leaderboard-item:nth-child(2) { background-color: #e9ecef; }
+.leaderboard-item:nth-child(3) { background-color: #fce1d3; }
 
 /* --- 弹窗 (Modal) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; }
@@ -194,8 +201,7 @@ footer { margin-top: 50px; padding: 20px; color: var(--color-text-muted); font-s
 .stamina-bar-container {
     text-align: center;
     max-width: 400px;         /* 设置一个最大宽度，比如400像素 */
-    margin-left: auto;        /* 这两行是让它水平居中的魔法 */
-    margin-right: auto;
+  margin: 20px auto;        /* 上下增加20px间距，并让它水平居中 */
 }
 .stamina-bar-container span {
     font-size: 1em;
