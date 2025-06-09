@@ -13,7 +13,8 @@ console.log('Supabase客户端已初始化');
 
 // 全局变量
 let currentUser = null;
-
+// script.js (顶部)
+const leaderboardList = document.getElementById('leaderboard-list');
 // 获取所有需要操作的HTML元素
 const authSection = document.getElementById('auth-section');
 const gameSection = document.getElementById('game-section');
@@ -61,8 +62,10 @@ async function onLoginSuccess(user) {
         updateLegendaryProgressUI(profile.task_completion_counter);
     }
 
+     // 加载用户的游戏数据
     fetchInventory();
     fetchAndRenderTodos();
+    fetchAndRenderLeaderboard(); // <<<<<< 新增调用
 }
 
 function onLogout() {
@@ -70,6 +73,41 @@ function onLogout() {
     console.log("用户未登录或已退出，显示登录界面。");
     authSection.style.display = 'block';
     gameSection.style.display = 'none';
+}
+
+// script.js (函数区)
+/**
+ * 获取并渲染排行榜数据
+ */
+async function fetchAndRenderLeaderboard() {
+    if (!leaderboardList) return;
+    leaderboardList.innerHTML = '<li>加载中...</li>';
+
+    // 查询预先计算好的leaderboard表，这个查询非常快！
+    const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('*')
+        .order('rank', { ascending: true });
+
+    if (error) {
+        console.error("获取排行榜失败:", error);
+        return leaderboardList.innerHTML = '<li>加载失败</li>';
+    }
+
+    leaderboardList.innerHTML = '';
+    if (data.length === 0) {
+        leaderboardList.innerHTML = '<li>排行榜暂无数据，快去收集传说食物吧！</li>';
+    } else {
+        data.forEach(player => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span class="rank">${player.rank}.</span>
+                <span class="username">${player.username}</span>
+                <span class="score">${player.score}</span>
+            `;
+            leaderboardList.appendChild(li);
+        });
+    }
 }
 
 

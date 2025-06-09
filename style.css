@@ -372,3 +372,37 @@ footer {
     color: var(--color-text-muted);
     font-size: 0.9em;
 }
+
+/* style.css */
+.leaderboard-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.leaderboard-section h2 {
+    text-align: center;
+    color: #4a4a4a;
+    margin-bottom: 20px;
+}
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+}
+#leaderboard-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    font-size: 1.1em;
+}
+#leaderboard-list li:nth-child(1) { background-color: #fff3cd; } /* 金牌 */
+#leaderboard-list li:nth-child(2) { background-color: #e9ecef; } /* 银牌 */
+#leadercode-list li:nth-child(3) { background-color: #fce1d3; } /* 铜牌 */
+
+.rank { font-weight: bold; font-size: 1.2em; min-width: 40px; }
+.username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
+.score { font-weight: bold; color: #007bff; }
