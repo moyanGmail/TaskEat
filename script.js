@@ -11,6 +11,8 @@ console.log('Supabase客户端已初始化');
 let currentUser = null;
 
 
+const legendaryProgressBar = document.getElementById('legendary-progress-bar');
+const legendaryProgressText = document.getElementById('legendary-progress-text');
 const pityValueElement = document.getElementById('pity-value');
 // 获取所有需要操作的HTML元素
 const authSection = document.getElementById('auth-section');
@@ -59,10 +61,16 @@ async function onLoginSuccess(user) { // <<<< 把函数变成 async
     authSection.style.display = 'none';
     gameSection.style.display = 'block';
 
-    // 获取并更新保底计数显示
-    const { data: profile } = await supabaseClient.from('profiles').select('pity_counter').eq('id', user.id).single();
+    // 同时获取并更新两个计数器的UI
+    const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('pity_counter, task_completion_counter')
+        .eq('id', user.id)
+        .single();
+
     if (profile) {
         updatePityCounterUI(profile.pity_counter);
+        updateLegendaryProgressUI(profile.task_completion_counter);
     }
 
     // 加载用户的游戏数据
@@ -178,52 +186,129 @@ async function handleCompleteTask(taskId, isImportant) {
 
 
 // --- 4. 游戏奖励核心逻辑 ---
+// script.js
 
 /**
- * (全新升级版) 检查并根据规则发放奖励，并提供清晰的UI反馈
+ * (V3版 - 支持双保底系统) 检查并根据规则发放奖励
  * @param {boolean} wasTaskImportant - 刚刚完成的任务是否是重要的
  */
 async function checkForReward(wasTaskImportant) {
     console.log(`任务完成，类型: ${wasTaskImportant ? '重要' : '非重要'}`);
-    if (!currentUser) return; // 安全检查
+    if (!currentUser) return;
 
-    // 先清空上一次的临时反馈信息
-    rewardDisplay.innerHTML = '';
+    rewardDisplay.innerHTML = ''; // 清空上一次的反馈信息
 
+    // --- 1. 获取并更新总任务计数器 ---
+    const { data: profile, error: profileError } = await supabaseClient
+        .from('profiles')
+        .select('non_important_task_progress, task_completion_counter') // 同时获取两个计数器
+        .eq('id', currentUser.id)
+        .single();
+
+    if (profileError) {
+        console.error("获取用户进度失败:", profileError);
+        return rewardDisplay.innerHTML = `<p class="feedback-message error">获取用户进度失败</p>`;
+    }
+
+    // 总任务计数器必定+1
+    const newTotalTasks = profile.task_completion_counter + 1;
+    await supabaseClient.from('profiles').update({ task_completion_counter: newTotalTasks }).eq('id', currentUser.id);
+    updateLegendaryProgressUI(newTotalTasks); // 更新UI
+
+    // --- 2. 检查是否触发“大保底”（最高优先级）---
+    const LEGENDARY_PITY_THRESHOLD = 50;
+    if (newTotalTasks >= LEGENDARY_PITY_THRESHOLD) {
+        console.warn(`★★★★★ 大保底触发！总任务数: ${newTotalTasks}`);
+        await grantLegendaryReward(); // 调用专门的传说奖励函数
+        // 重置大保底计数器
+        await supabaseClient.from('profiles').update({ task_completion_counter: 0 }).eq('id', currentUser.id);
+        updateLegendaryProgressUI(0); // UI也重置
+        return; // 大保底触发后，不再执行后续的常规奖励逻辑
+    }
+
+    // --- 3. 如果未触发大保底，则执行常规奖励逻辑 ---
     if (wasTaskImportant) {
-        // --- 规则1: 完成1个重要任务，直接获得奖励 ---
-        console.log("重要任务完成，准备发放奖励！");
+        // 重要任务直接获得奖励
         await grantRandomReward("完成重要任务");
     } else {
-        // --- 规则2: 完成3个非重要任务，获得奖励 ---
-        // 1. 获取用户当前的进度
-        const { data: profile, error: profileError } = await supabaseClient
-            .from('profiles')
-            .select('non_important_task_progress')
-            .eq('id', currentUser.id)
-            .single();
-
-        if (profileError) {
-            console.error("获取用户进度失败:", profileError);
-            rewardDisplay.innerHTML = `<p class="feedback-message error">获取用户进度失败</p>`;
-            return;
-        }
-
+        // 非重要任务，检查小保底进度
         const newProgress = profile.non_important_task_progress + 1;
         console.log(`非重要任务进度: ${newProgress}/3`);
 
         if (newProgress >= 3) {
-            // 进度达成，发放奖励并重置计数器
-            console.log("非重要任务进度达成，发放奖励并重置！");
             await grantRandomReward("完成3个普通任务");
-            // 在 grantRandomReward 之后重置计数器
             await supabaseClient.from('profiles').update({ non_important_task_progress: 0 }).eq('id', currentUser.id);
         } else {
-            // ⭐⭐⭐ 核心修改：进度未达成，也要给出明确的UI反馈！ ⭐⭐⭐
-            // 只更新计数器，并在界面上显示进度
             await supabaseClient.from('profiles').update({ non_important_task_progress: newProgress }).eq('id', currentUser.id);
             rewardDisplay.innerHTML = `<p class="feedback-message">普通任务完成！当前进度：<span class="progress-highlight">${newProgress}/3</span>。加油！</p>`;
         }
+    }
+}
+// script.js (添加在 grantRandomReward 函数的上方或下方)
+/**
+ * 更新“大保底”传说奖励的进度条UI
+ * @param {number} current - 当前计数值
+ */
+function updateLegendaryProgressUI(current) {
+    const max = 50;
+    if (legendaryProgressBar && legendaryProgressText) {
+        const percentage = Math.min((current / max) * 100, 100);
+        legendaryProgressBar.style.width = `${percentage}%`;
+        legendaryProgressText.textContent = `${current} / ${max}`;
+    }
+}
+/**
+ * 发放一个保底的“传说”级别奖励
+ */
+async function grantLegendaryReward() {
+    console.log("正在发放传说保底奖励...");
+    rewardDisplay.innerHTML = `<p>检测到里程碑达成！正在为您颁发传说级奖励...</p>`;
+
+    try {
+        // 1. 从奖池中筛选出所有“传说”物品
+        const { data: legendaryRewards, error } = await supabaseClient
+            .from('rewards')
+            .select('id, name, image_url, rarity, type')
+            .eq('rarity', '传说');
+
+        if (error || !legendaryRewards || legendaryRewards.length === 0) {
+            throw new Error("大保底触发，但传说奖池为空或获取失败！");
+        }
+
+        // 2. 从传说奖池中随机选一个
+        const legendaryReward = legendaryRewards[Math.floor(Math.random() * legendaryRewards.length)];
+        console.log(`传说保底获得: ${legendaryReward.name}`);
+
+        // 3. 将奖励存入用户仓库
+        await supabaseClient
+            .from('user_inventory')
+            .insert({ user_id: currentUser.id, reward_id: legendaryReward.id });
+
+        // 4. ★★ 关键联动：获得传说物品后，也应该重置“防脸黑”的小保底计数器！ ★★
+        await supabaseClient
+            .from('profiles')
+            .update({ pity_counter: 0 })
+            .eq('id', currentUser.id);
+        updatePityCounterUI(0); // 更新UI
+
+        // 5. 在UI上用最华丽的方式展示奖励
+        const rarityClass = `rarity-${legendaryReward.rarity.toLowerCase()}`;
+        rewardDisplay.innerHTML = `
+            <h3 style="color: #ff8c00; font-weight:bold;">★★ 里程碑达成 ★★</h3>
+            <div class="reward-card ${rarityClass}">
+                <img src="${legendaryReward.image_url}" alt="${legendaryReward.name}" />
+                <h4>${legendaryReward.name}</h4>
+                <p>类别: ${legendaryReward.type}</p>
+                <p>稀有度: <span class="rarity-text">${legendaryReward.rarity}</span></p>
+            </div>
+        `;
+
+        // 6. 刷新仓库显示
+        await fetchInventory();
+
+    } catch (error) {
+        console.error('传说保底奖励发放流程出错:', error);
+        rewardDisplay.innerHTML = `<p style="color:red;">哎呀，传说奖励发放出错了: ${error.message}</p>`;
     }
 }
 

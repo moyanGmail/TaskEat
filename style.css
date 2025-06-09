@@ -1,7 +1,7 @@
 /* 引入一个更现代、圆润的 Google 字体 */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-/* --- CSS 变量定义 (全新焦糖布丁主题) --- */
+/* --- CSS 变量定义 (焦糖布丁主题) --- */
 :root {
     /* 基础颜色 */
     --color-bg: #4d2f2a; /* 更柔和的深棕色背景，营造舒适感 */
@@ -42,14 +42,13 @@
     object-fit: cover;
 }
 
-/* 半透明遮罩层 (已更新为暖棕色) */
+/* 半透明遮罩层 (暖棕色) */
 .video-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* 使用深棕色半透明，更能融入咖啡馆暖色调 */
     background-color: rgba(61, 36, 25, 0.65);
     z-index: -1;
 }
@@ -79,15 +78,14 @@ h1, h4 {
     font-weight: 400;
 }
 
-/* --- 按钮样式 (全新焦糖色主题) --- */
+/* --- 按钮样式 (焦糖色主题) --- */
 button {
     padding: 12px 28px;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    /* 焦糖到琥珀色的温暖渐变 */
     background-image: linear-gradient(45deg, var(--color-accent), #e89f43);
-    color: var(--color-bg); /* 深色文字在亮按钮上更清晰 */
+    color: var(--color-bg);
     border: none;
     border-radius: var(--border-radius-md);
     box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3);
@@ -105,15 +103,15 @@ button:active {
 
 /* --- 任务列表美化 --- */
 #task-list {
-    list-style-type: none; /* 移除默认的小圆点 */
-    padding-left: 0;       /* 移除默认的左侧内边距 */
+    list-style-type: none;
+    padding-left: 0;
     margin: 30px auto;
     max-width: 600px;
 }
 
 #task-list li {
     background-color: var(--color-surface);
-    color: var(--color-text); /* 确保列表项中的文字是亮的 */
+    color: var(--color-text);
     padding: 15px 20px;
     margin-bottom: 12px;
     border-radius: var(--border-radius-sm);
@@ -129,34 +127,28 @@ button:active {
     box-shadow: var(--shadow-md);
 }
 
-/* 使用 ::before 伪元素添加自定义图标 */
 #task-list li::before {
-    content: '☕'; /* 使用咖啡杯图标，更贴合主题 */
+    content: '☕';
     font-size: 1.2em;
     margin-right: 15px;
     line-height: 1;
 }
 
-/* 重要任务样式 (字体更大) */
 .important-task {
     border-left: 4px solid var(--rarity-legendary);
-    font-size: 1.1em; /* 让重要任务字体更大 */
+    font-size: 1.1em;
     font-weight: 600;
 }
 
 .important-task::before {
-    content: '⭐'; /* 重要任务使用星星图标 */
+    content: '⭐';
     font-size: 1.3em;
     color: var(--rarity-legendary-glow);
 }
 
-/* 隐藏 .important-task span 内的文字，因为我们用图标了 */
 .important-task span {
-   /* 我们不再需要原来的 span 里的星星和文字了，可以考虑在HTML中移除或在此处隐藏 */
-   /* 如果你还想保留 span 里的文字，可以调整这里的样式 */
-   color: var(--rarity-legendary); /* 让文字颜色和边框匹配 */
+   color: var(--rarity-legendary);
 }
-
 
 /* --- 物品库存网格 --- */
 #inventory-display {
@@ -217,7 +209,7 @@ button:active {
 .reward-card h4 {
     margin: 10px 0 5px;
     font-size: 24px;
-    color: var(--color-text); /* 确保标题是亮的 */
+    color: var(--color-text);
 }
 
 .reward-card p {
@@ -227,19 +219,12 @@ button:active {
 }
 
 /* --- 稀有度颜色应用 (暖色调) --- */
-/* 普通 */
 .rarity-普通 { border-color: var(--rarity-common); }
 .rarity-普通 .rarity-text { color: var(--rarity-common); }
-
-/* 稀有 */
 .rarity-稀有 { border-color: var(--rarity-rare); }
 .rarity-稀有 .rarity-text { color: var(--rarity-rare); }
-
-/* 史诗 */
 .rarity-史诗 { border-color: var(--rarity-epic); }
 .rarity-史诗 .rarity-text { color: var(--rarity-epic); }
-
-/* 传说 - 特殊效果 */
 .rarity-传说 {
     border-color: var(--rarity-legendary);
     box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
@@ -249,7 +234,6 @@ button:active {
     text-shadow: 0 0 5px var(--rarity-legendary-glow);
 }
 
-/* “传说”奖励卡片呼吸光晕动画 */
 @keyframes legendary-glow {
     0% {
         box-shadow: 0 0 15px var(--rarity-legendary), 0 0 25px var(--rarity-legendary-glow);
@@ -267,6 +251,73 @@ button:active {
 
 .reward-card.rarity-传说 {
     animation: legendary-glow 2.5s infinite ease-in-out;
+}
+
+/* --- 反馈信息提示框 --- */
+.feedback-message {
+    padding: 15px 20px;
+    margin: 20px auto;
+    border-radius: var(--border-radius-sm);
+    font-size: 1.1em;
+    max-width: 600px;
+    background-color: rgba(105, 51, 41, 0.85);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: var(--color-text);
+    border: 1px solid rgba(255, 218, 154, 0.3);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+    border-left: 4px solid var(--color-accent);
+}
+
+.feedback-message.error {
+    background-color: rgba(139, 42, 42, 0.85);
+    color: #fff;
+    border-left-color: #f8d7da;
+}
+
+.progress-highlight {
+    font-weight: bold;
+    color: var(--color-accent);
+    text-shadow: 0 0 5px var(--rarity-legendary-glow);
+    font-size: 1.2em;
+}
+
+/* --- 传说保底进度条 (全新主题化样式) --- */
+.legendary-pity-tracker {
+    margin: 30px auto 20px; /* 增加上边距 */
+    text-align: center;
+    max-width: 400px; /* 限制宽度使其更精致 */
+}
+
+.legendary-pity-tracker span {
+    font-size: 0.9em;
+    color: var(--color-text-muted); /* 使用主题中的辅助文字颜色 */
+}
+
+.progress-bar-container {
+    /* 使用半透明的背景色，创建轨道效果 */
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 244, 199, 0.15); /* 添加微妙的边框 */
+    border-radius: var(--border-radius-sm); /* 与主题统一的圆角 */
+    height: 18px; /* 稍微加高一点，更有质感 */
+    width: 100%; /* 让容器占满100%宽度 */
+    margin: 8px auto;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4); /* 添加内阴影增加深度 */
+}
+
+#legendary-progress-bar {
+    height: 100%;
+    /* 使用主题中的传说和史诗颜色创建华丽的渐变 */
+    background: linear-gradient(90deg, var(--rarity-epic), var(--rarity-legendary));
+    border-radius: var(--border-radius-sm);
+    transition: width 0.5s ease-in-out;
+}
+
+#legendary-progress-text {
+    font-weight: bold;
+    color: var(--color-text); /* 使用主题中的主文字颜色，确保清晰 */
 }
 
 
@@ -320,27 +371,4 @@ footer {
     padding: 20px;
     color: var(--color-text-muted);
     font-size: 0.9em;
-}
-
-/* style.css */
-
-.feedback-message {
-    text-align: center;
-    padding: 20px;
-    margin-top: 10px;
-    background-color: #e9ecef;
-    border-radius: 8px;
-    color: #495057;
-    font-size: 1.1em;
-}
-
-.feedback-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.progress-highlight {
-    font-weight: bold;
-    color: #007bff;
-    font-size: 1.2em;
 }
