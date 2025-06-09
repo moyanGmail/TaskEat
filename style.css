@@ -51,18 +51,18 @@ h1, h2, h4 {
     font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400;
 }
 
-/* --- 任务输入区 (Google 风格) --- */
+/* --- 任务输入区 (Google 风格 - V2) --- */
 #add-todo-form {
     display: flex;
     align-items: center;
     max-width: 600px;
-    margin: 40px auto 10px auto; /* 调整下方边距，为复选框留出空间 */
+    margin: 40px auto 10px auto;
     background-color: var(--color-bg);
-    border-radius: 99px; /* 关键：药丸形状的圆角 */
+    border-radius: 99px; /* 药丸形状的圆角 */
     border: 2px solid var(--color-surface);
-    padding: 6px 8px 6px 16px; /* 调整内边距，左侧为图标留空间 */
+    padding: 6px 8px; /* 调整内边距 */
     transition: all var(--transition-speed) ease;
-    flex-wrap: wrap; /* 允许复选框换行 */
+    flex-wrap: wrap;
     justify-content: center;
 }
 
@@ -78,14 +78,10 @@ h1, h2, h4 {
     outline: none;
     background: transparent;
     color: var(--color-text);
-    padding: 10px;
+    padding: 12px 20px; /* 调整内边距，让输入框更高更舒适 */
     font-size: 1.1em;
-    /* 通过背景图添加搜索图标 */
-    padding-left: 40px; /* 为图标腾出空间 */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23FFDA9A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'%3E%3C/line%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left 10px center;
-    min-width: 200px; /* 保证输入框在小屏幕上不会被过度压缩 */
+    min-width: 200px;
+    /* 已移除放大镜相关的 background-image 和 padding-left */
 }
 
 #task-input::placeholder {
@@ -94,26 +90,38 @@ h1, h2, h4 {
 }
 
 #add-task-button {
-    flex-shrink: 0; /* 防止按钮被压缩 */
+    flex-shrink: 0;
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    font-size: 28px;
-    line-height: 1;
+    font-size: 32px; /* 可以微调加号大小 */
     padding: 0;
-    margin-left: 8px; /* 与输入框的间距 */
-    /* 继承全局按钮样式，但覆盖部分属性 */
+    margin-left: 8px;
+
+    /* 关键：使用 Flexbox 将加号完美居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1; /* 确保行高不会干扰垂直对齐 */
+    padding-bottom: 2px; /* 针对“+”号的视觉微调，使其看起来更居中 */
 }
 
 /* “重要任务”复选框的样式 */
 #add-todo-form label {
     display: block;
-    width: 100%; /* 让其脱离 flex 布局，换行显示 */
+    width: 100%;
     text-align: center;
-    margin-top: 15px; /* 与输入框的距离 */
+    margin-top: 15px;
     padding-bottom: 5px;
     color: var(--color-text-muted);
     cursor: pointer;
+}
+
+#add-todo-form label input {
+    margin-right: 8px;
+    vertical-align: middle;
+    transform: scale(1.2);
+    accent-color: var(--color-accent);
 }
 
 #add-todo-form label input {
