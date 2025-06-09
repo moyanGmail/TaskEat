@@ -41,27 +41,26 @@ header, main, footer { background-color: transparent; }
 h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text); }
 .subtitle { font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400; }
 
-/* --- 任务输入区 (终极布局方案 - 悬浮按钮) --- */
+/* --- 任务输入区 (最终版 - 无按钮回车提交) --- */
 #add-todo-form {
-    position: relative; /* 关键(1): 成为按钮定位的“锚点” */
-    display: block; /* 不再使用 flex-direction: row */
+    /* 这个容器现在只负责定位和下方“重要任务”的布局 */
     max-width: 600px;
-    margin: 40px auto 10px auto;
+    margin: 40px auto;
+    text-align: center;
 }
 
 #task-input {
     display: block;
     width: 100%;
-    height: 54px; /* 设定一个舒适的高度 */
-    border-radius: 99px; /* 药丸形状 */
+    height: 56px; /* 一个舒适、大气的高度 */
+    border-radius: 99px; /* 完整的药丸形状 */
     background-color: var(--color-bg);
     border: 2px solid var(--color-surface);
 
-    /* 调整内边距，为按钮留出足够空间 */
-    padding: 0 60px 0 25px; /* 右侧内边距(60px)必须大于按钮宽度 */
+    padding: 0 25px; /* 对称的左右内边距 */
 
     color: var(--color-text);
-    font-size: 1.1em;
+    font-size: 1.2em; /* 更大的字体，更易读 */
     transition: all var(--transition-speed) ease;
 }
 
@@ -76,35 +75,18 @@ h1, h2, h4 { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); color: var(--color-text)
     opacity: 0.6;
 }
 
+/* 隐藏添加按钮，但它在后台仍然可以被JS调用 */
 #add-task-button {
-    /* 关键(2): 使用绝对定位，脱离文档流 */
-    position: absolute;
-    top: 50%; /* 关键(3): 定位到父容器的垂直中线 */
-    right: 7px; /* 距离右侧的距离 */
-    transform: translateY(-50%); /* 关键(4): 将自身向上移动50%的高度，实现完美垂直居中 */
-
-    /* 设定一个更精致的尺寸 */
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-
-    /* 其他样式 */
-    font-size: 24px;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    line-height: 1;
-    padding-bottom: 1px; /* 视觉微调 */
+    display: none;
 }
 
 /* “重要任务”复选框的样式 */
 #add-todo-form label {
-    display: block;
-    text-align: center;
-    margin-top: 15px; /* 与输入框的距离 */
+    display: inline-block; /* 改为行内块元素，更紧凑 */
+    margin-top: 15px;
     color: var(--color-text-muted);
     cursor: pointer;
+    padding: 5px 10px;
 }
 
 #add-todo-form label input {
