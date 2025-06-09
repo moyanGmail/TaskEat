@@ -311,7 +311,7 @@ async function fetchInventory() {
 
 // 绑定UI元素的点击事件
 loginButton.addEventListener('click', handleLogin);
-logoutButton.addEventListener('click', () => supabaseClient.auth.signOut());
+//logoutButton.addEventListener('click', () => supabaseClient.auth.signOut());
 addTaskButton.addEventListener('click', handleAddTask);
 
 // 为整个任务列表容器设置一个事件监听器（事件委托）
