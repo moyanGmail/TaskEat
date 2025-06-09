@@ -51,6 +51,47 @@ h1, h2, h4 {
     font-size: 1.1em; color: var(--color-text-muted); margin-top: -15px; font-weight: 400;
 }
 
+/* --- 任务输入区 (全新美化样式) --- */
+.task-input-container {
+    display: flex; /* 使用 Flexbox 布局，让输入框和按钮水平排列 */
+    max-width: 600px;
+    margin: 40px auto; /* 增加上下边距 */
+    background-color: var(--color-bg);
+    border-radius: var(--border-radius-md); /* 为整个容器设置圆角 */
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--color-surface);
+    transition: all var(--transition-speed) ease;
+}
+/* 当用户聚焦在输入框时，整个容器发光 */
+.task-input-container:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 15px rgba(245, 206, 117, 0.5);
+}
+/* 文本输入框样式 */
+#new-task-input {
+    flex-grow: 1; /* 让输入框占据尽可能多的空间 */
+    border: none; /* 移除默认边框 */
+    outline: none; /* 移除默认的蓝色聚焦轮廓 */
+    background-color: transparent; /* 背景透明，使用容器的背景色 */
+    color: var(--color-text);
+    padding: 18px 20px; /* 增大内边距，让输入框更高 */
+    font-size: 1.1em; /* 增大字体 */
+    border-radius: var(--border-radius-md) 0 0 var(--border-radius-md); /* 只设置左侧圆角 */
+}
+#new-task-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+/* 添加按钮的特殊样式 */
+#add-task-btn {
+    border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; /* 只设置右侧圆角 */
+    border-left: 1px solid var(--color-surface); /* 在按钮和输入框之间加一条分界线 */
+    white-space: nowrap; /* 防止文字换行 */
+    padding-left: 30px; /* 调整按钮内边距以适应更大的高度 */
+    padding-right: 30px;
+}
+
+
 /* --- 按钮样式 (全局) --- */
 button {
     padding: 12px 28px; font-size: 18px; font-weight: 600; cursor: pointer; background-image: linear-gradient(45deg, var(--color-accent), #e89f43); color: var(--color-bg); border: none; border-radius: var(--border-radius-md); box-shadow: 0 4px 10px rgba(245, 206, 117, 0.3); transition: all var(--transition-speed) ease;
@@ -61,6 +102,7 @@ button:hover {
 button:active {
     transform: scale(0.98);
 }
+
 
 /* --- 任务列表美化 --- */
 #task-list {
@@ -211,9 +253,14 @@ button:active {
 }
 
 /* 2. 使用 ::before 伪元素来自动生成和显示排名 */
+.rank::before {
+    content: counter(leaderboard_rank); /* 3. 显示计数器的当前值 */
+    counter-increment: leaderboard_rank; /* 并且让计数器 +1 */
+}
 
 .username { font-weight: 500; flex-grow: 1; margin-left: 15px; }
 .score { font-weight: bold; color: var(--color-accent); }
+
 
 /* --- 弹窗 (Modal) (全新主题化样式) --- */
 .modal-overlay {
