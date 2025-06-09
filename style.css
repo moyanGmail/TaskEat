@@ -209,33 +209,54 @@ footer { margin-top: 50px; padding: 20px; color: var(--color-text-muted); font-s
 
 /* 体力条 */
 .status-bars {
-    margin-bottom: 25px;
+    /* 状态栏的整体容器，可以根据需要调整位置和宽度 */
+    max-width: 350px;
+    margin: 20px auto; /* 居中显示 */
+    padding: 10px;
 }
 .stamina-bar-container {
-    text-align: center;
-    max-width: 400px;         /* 设置一个最大宽度，比如400像素 */
-  margin: 20px auto;        /* 上下增加20px间距，并让它水平居中 */
+    display: grid; /* 使用 Grid 布局，更灵活 */
+    grid-template-columns: auto 1fr; /* 第一列自动宽度(文字)，第二列占据剩余空间(进度条) */
+    grid-template-rows: auto auto; /* 两行内容 */
+    align-items: center; /* 垂直居中对齐 */
+    gap: 5px 10px; /* 行间距 和 列间距 */
 }
-.stamina-bar-container span {
+
+/* “❤️ 体力值” 标签的样式 */
+.stamina-bar-container > span:first-of-type {
+    grid-column: 1 / 2; /* 占据第一列 */
     font-size: 1em;
-    font-weight: bold;
-    color: #495057;
+    font-weight: 600;
+    color: var(--color-text); /* 使用主题中的主文字颜色 */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
+
+/* 进度条的背景/轨道 */
 .stamina-bar-outer {
-    height: 20px;
-    background-color: #e9ecef;
-    border-radius: 10px;
-    margin: 8px 0;
-    overflow: hidden;
-    border: 2px solid #ced4da;
+    grid-column: 1 / -1; /* 让轨道横跨所有列 */
+    position: relative; /* 成为内部文字定位的“锚点” */
+    height: 22px;
+    background-color: rgba(0, 0, 0, 0.4); /* 半透明黑色背景 */
+    border-radius: var(--border-radius-md);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); /* 内阴影增加深度 */
+    overflow: hidden; /* 隐藏溢出的内部条 */
 }
+
+/* 内部的填充条 (红色的部分) */
 #stamina-bar-inner {
     height: 100%;
-    background: linear-gradient(90deg, #28a745, #218838);
-    border-radius: 8px;
-    transition: width 0.5s ease-in-out;
+    border-radius: var(--border-radius-md);
+    /* 使用漂亮的渐变色，而不是单色 */
+     background-image: linear-gradient(45deg, #e54b4b, #d42a2a);
+     box-shadow: 0 0 10px rgba(229, 75, 75, 0.7);
+     transition: width 0.5s ease-out; /* 宽度变化时有平滑动画 */
 }
+
+/* “100 / 100” 数字的样式 */
 #stamina-text {
-    font-family: monospace;
-    font-size: 1.1em;
+    grid-column: 2 / 3; /* 占据第二列 */
+    justify-self: end; /* 在自己的格子内右对齐 */
+    font-size: 0.9em;
+    font-weight: bold;
+    color: var(--color-text-muted); /* 使用辅助文字颜色 */
 }
